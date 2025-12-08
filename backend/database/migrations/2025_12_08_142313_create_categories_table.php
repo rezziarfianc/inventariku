@@ -10,18 +10,17 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('products', function (Blueprint $table) {
-            $table->id('product_id');
+        Schema::create('categories', function (Blueprint $table) {
+            $table->id('category_id');  // numeric PK
+            $table->string('code', 15)->unique(); // your CAT-001 here
+            $table->unsignedBigInteger('parent_id')->nullable();
             $table->string('name');
-            $table->decimal('price', 20, 2);
             $table->text('description')->nullable();
-            $table->integer('low_stock_threshold')->default(0);
-            $table->unsignedBigInteger('category_id')->nullable();
-            $table->foreign('category_id')->references('category_id')->on('categories')->onDelete('set null');
+            $table->foreign('parent_id')->references('category_id')->on('categories')->onDelete('set null');
             $table->timestamps();
             $table->softDeletes();
 
-            $table->index('category_id');
+            $table->index('parent_id');
         });
     }
 
@@ -30,6 +29,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('products');
+        Schema::dropIfExists('categories');
     }
 };

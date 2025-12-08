@@ -64,6 +64,18 @@ services:
                 - ping
             retries: 3
             timeout: 5s
+    pgadmin:
+        image: dpage/pgadmin4
+        environment:
+            PGADMIN_DEFAULT_EMAIL: admin@fake.com
+            PGADMIN_DEFAULT_PASSWORD: password
+        ports:
+            - "5050:80"
+        volumes:
+            - sail-pgadmin:/var/lib/pgadmin
+        depends_on:
+            - pgsql
+
 networks:
     sail:
         driver: bridge
@@ -71,4 +83,6 @@ volumes:
     sail-pgsql:
         driver: local
     sail-redis:
+        driver: local
+    sail-pgadmin:
         driver: local
