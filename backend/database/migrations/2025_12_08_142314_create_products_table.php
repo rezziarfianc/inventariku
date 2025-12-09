@@ -12,8 +12,8 @@ return new class extends Migration {
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id('product_id');
-            $table->string('name');
-            $table->decimal('price', 20, 2);
+            $table->string('name', 30);
+            $table->decimal('price', 20, 2)->default(0);
             $table->text('description')->nullable();
             $table->integer('low_stock_threshold')->default(0);
             $table->unsignedBigInteger('category_id')->nullable();

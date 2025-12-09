@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\CategoryController;
+use App\Http\Controllers\Api\V1\ProductController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -18,6 +19,10 @@ Route::prefix('v1')->group(function () {
         // Category Routes
         Route::apiResource('categories', CategoryController::class);
         Route::get('categories/{category}/audits', [CategoryController::class, 'auditHistory'])->name('categories.view');
+
+        // Product Routes
+        Route::apiResource('products', ProductController::class);
+        Route::get('products/{product}/audits', [ProductController::class, 'auditHistory'])->name('products.view');
 
     });
 });

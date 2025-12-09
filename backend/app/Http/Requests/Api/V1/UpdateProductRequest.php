@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Api\V1;
 
+use Gate;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateProductRequest extends FormRequest
@@ -11,7 +12,7 @@ class UpdateProductRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return Gate::allows('products.update');
     }
 
     /**
@@ -22,7 +23,12 @@ class UpdateProductRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => ['sometimes', 'string', 'max:30'],
+            'description' => ['nullable', 'string'],
+            'price' => ['sometimes', 'numeric', 'min:0'],
+            'quantity' => ['sometimes', 'integer', 'min:0'],
+            'category_id' => ['sometimes', 'integer', 'exists:categories,category_id'],
+            'low_stock_threshold' => ['nullable', 'integer', 'min:0'],
         ];
     }
 }
