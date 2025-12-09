@@ -15,15 +15,38 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
+        $superAdmin = User::factory()->create([
+            'name' => 'Super Admin',
+            'email' => 'superadmin@example.com',
+            'password' => 'password',
+        ]);
+
         $admin = User::factory()->create([
             'name' => 'Admin',
             'email' => 'admin@example.com',
             'password' => 'password',
         ]);
-        $resorces = ['users', 'categories', 'products', 'supplies', 'supply_flows'];
+
+        $staff = User::factory()->create([
+            'name' => 'Staff',
+            'email' => 'staff@example.com',
+            'password' => 'password',
+        ]);
+
+        $manager = User::factory()->create([
+            'name' => 'Manager',
+            'email' => 'manager@example.com',
+            'password' => 'password',
+        ]);
+
+        $resorces = ['users', 'categories', 'products', 'supplies'];
         $actions = ['create', 'view', 'update', 'delete'];
 
-        $role = Role::firstOrCreate(['name' => 'admin']);
+        $adminRole = Role::firstOrCreate(['name' => 'admin']);
+        $superAdminRole = Role::firstOrCreate(['name' => 'super_admin']);
+        $staffRole = Role::firstOrCreate(['name' => 'staff']);
+        $managerRole = Role::firstOrCreate(['name' => 'manager']);
+
         $createdAt = now();
 
         $guardName = config('auth.defaults.guard');
@@ -36,8 +59,34 @@ class UserSeeder extends Seeder
         }
         Permission::insert($permissions);
 
-        $role->givePermissionTo(array_column($permissions, 'name'));
+        $permissions = collect(array_column($permissions, 'name'));
+
+        //super admin
+        $superAdminRole->givePermissionTo($permissions);
+        $superAdmin->assignRole('admin');
+        $superAdmin->givePermissionTo($permissions);
+
+        // admin
+        $adminPermissions = $permissions->filter(function ($permission) {
+            return !str_starts_with($permission, 'users.');
+        })->toArray();
+        $adminRole->givePermissionTo($adminPermissions);
         $admin->assignRole('admin');
-        $admin->givePermissionTo(array_column($permissions, 'name'));
+
+        // staff
+        $staffPermissions = $permissions->filter(function ($permission) {
+            return str_starts_with($permission, 'supplies.') || str_starts_with($permission, 'supply_flows.');
+        })->toArray();
+        $staffRole->givePermissionTo($staffPermissions);
+        $staff->assignRole('staff');
+
+        // manager
+        $managerPermissions = $permissions->filter(function ($permission) {
+            return str_contains($permission, 'view') && !str_starts_with($permission, 'users.');
+        })->toArray();
+
+        $managerRole->givePermissionTo($managerPermissions);
+        $manager->assignRole('manager');
+
     }
 }
