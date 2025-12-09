@@ -1,0 +1,33 @@
+<?php
+
+namespace App\Http\Requests\Api\V1;
+
+use Gate;
+use Illuminate\Foundation\Http\FormRequest;
+
+class GetSupplyRequest extends FormRequest
+{
+    /**
+     * Determine if the user is authorized to make this request.
+     */
+    public function authorize(): bool
+    {
+        return Gate::allows('supplies.view');
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     */
+    public function rules(): array
+    {
+        return [
+            'per_page' => ['sometimes', 'integer', 'min:1', 'max:100'],
+            'page' => ['sometimes', 'integer', 'min:1'],
+            'sort_by' => ['sometimes', 'string', 'in:quantity,created_at'],
+            'sort_order' => ['sometimes', 'string', 'in:asc,desc'],
+            'flow_type' => ['sometimes', 'string', 'in:inbound,outbound']
+        ];
+    }
+}
