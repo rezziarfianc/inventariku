@@ -29,6 +29,7 @@ class User extends Authenticatable implements Auditable
         'email',
         'password',
     ];
+    
 
     /**
      * The attributes that should be hidden for serialization.
@@ -51,5 +52,10 @@ class User extends Authenticatable implements Auditable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function getAuthIdentifierName()
+    {
+        return 'user_id';
     }
 }

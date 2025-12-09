@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -30,6 +31,12 @@ return Application::configure(basePath: dirname(__DIR__))
         });
 
         $exceptions->render(function (NotFoundHttpException $e) {
+            $previous = $e->getPrevious();
+
+            if ($previous instanceof ModelNotFoundException) {
+                return ApiHelper::error('Resource not found', 404);
+            }
+            
             return ApiHelper::error('Endpoint Not Found', 404);
         });
 
