@@ -2,15 +2,35 @@
 
 namespace App\Helpers;
 
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+
 class ApiHelper
 {
     public static function response($data = null, $message = '', $status = true, $code = 200)
     {
-        return response()->json([
+        $pagination = null;
+        if ($data instanceof AnonymousResourceCollection) {
+            $pagination = [
+                'total' => $data->total(),
+                'per_page' => $data->perPage(),
+                'current_page' => $data->currentPage(),
+                'last_page' => $data->lastPage(),
+                'from' => $data->firstItem(),
+                'to' => $data->lastItem(),
+                'links' => $data->linkCollection()->toArray(), // Add pagination links
+            ];
+        }
+
+        $response = [
             'success' => $status,
             'message' => $message,
             'data' => $data,
-        ], $code);
+        ];
+        if ($pagination) {
+            $response['meta'] = $pagination;
+        }
+
+        return response()->json($response, $code);
     }
 
     public static function success($data = null, $message = 'Success', $code = 200)

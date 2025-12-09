@@ -14,7 +14,7 @@ return new class extends Migration {
             $table->id('category_id');  // numeric PK
             $table->string('code', 15)->unique(); // your CAT-001 here
             $table->unsignedBigInteger('parent_id')->nullable();
-            $table->string('name');
+            $table->string('name', 30);
             $table->text('description')->nullable();
             $table->foreign('parent_id')->references('category_id')->on('categories')->onDelete('set null');
             $table->timestamps();

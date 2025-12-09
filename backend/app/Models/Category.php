@@ -10,8 +10,10 @@ use OwenIt\Auditing\Auditable as AuditableTrait;
 class Category extends Model implements Auditable
 {
     use SoftDeletes, AuditableTrait;
-    protected $fillable = ['name', 'description', 'parent_id'];
+    protected $fillable = ['name', 'code', 'description', 'parent_id'];
     public $timestamps = true;
+
+    public $primaryKey = 'category_id';
 
     public function products()
     {
