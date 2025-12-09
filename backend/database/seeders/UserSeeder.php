@@ -20,19 +20,24 @@ class UserSeeder extends Seeder
             'email' => 'admin@example.com',
             'password' => 'password',
         ]);
+        $resorces = ['users', 'categories', 'products', 'supplies', 'supply_flows'];
+        $actions = ['create', 'view', 'update', 'delete'];
 
         $role = Role::firstOrCreate(['name' => 'admin']);
+        $createdAt = now();
 
         $guardName = config('auth.defaults.guard');
-        Permission::insert([
-            ['name' => 'users.*', 'guard_name' => $guardName],
-            ['name' => 'categories.*', 'guard_name' => $guardName],
-            ['name' => 'products.*', 'guard_name' => $guardName],
-            ['name' => 'supplies.*', 'guard_name' => $guardName],
-            ['name' => 'supply_flows.*', 'guard_name' => $guardName],
-        ]);
+        $permissions = [];
+        foreach ($resorces as $resource) {
+            foreach ($actions as $action) {
+                $permissionName = "{$resource}.{$action}";
+                $permissions[] = ['name' => $permissionName, 'guard_name' => $guardName, 'created_at' => $createdAt];
+            }
+        }
+        Permission::insert($permissions);
 
-        $role->givePermissionTo(['users.*', 'categories.*', 'products.*', 'supplies.*', 'supply_flows.*']);
+        $role->givePermissionTo(array_column($permissions, 'name'));
         $admin->assignRole('admin');
+        $admin->givePermissionTo(array_column($permissions, 'name'));
     }
 }
