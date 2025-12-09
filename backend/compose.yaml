@@ -71,6 +71,8 @@ services:
             PGADMIN_DEFAULT_PASSWORD: password
         ports:
             - "5050:80"
+        networks:
+            - sail
         volumes:
             - sail-pgadmin:/var/lib/pgadmin
         depends_on:
