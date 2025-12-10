@@ -77,6 +77,15 @@ services:
             - sail-pgadmin:/var/lib/pgadmin
         depends_on:
             - pgsql
+    whatsapp-api:
+        image: avoylenko/wwebjs-api:latest
+        container_name: wwebjs-api
+        restart: always
+        ports:
+        - "3000:3000"
+        env_file: .env.whatsapp
+        volumes:
+        - ./sessions:/usr/src/app/sessions
 
 networks:
     sail:
