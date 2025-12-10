@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\BrandController;
 use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\ProductController;
+use App\Http\Controllers\Api\V1\RoleController;
 use App\Http\Controllers\Api\V1\SupplyController;
 use App\Http\Controllers\Api\V1\UserController;
 use Illuminate\Http\Request;
@@ -36,6 +37,9 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('users', UserController::class);
         Route::get('users/{user}/audits', [UserController::class, 'auditHistory'])->name('users.view');
         Route::put('users/restore/{user}', [UserController::class, 'restore'])->name('users.restore');
+
+        // Role Routes
+        Route::get('roles', [RoleController::class, 'index'])->name('roles.index');
 
     });
 });
