@@ -18,6 +18,9 @@ class UserResource extends JsonResource
             'user_id' => $this->user_id,
             'name' => $this->name,
             'email' => $this->email,
+            'deleted_at' => $this->when($this->deleted_at, function () {
+                return $this->deleted_at;
+            }),
             'roles' => $this->whenLoaded('roles', function () {
                 return $this->roles->pluck('name');
             }),
@@ -34,8 +37,6 @@ class UserResource extends JsonResource
                         }
                         $grouped[$name][] = $action;
                     }
-                    // dump($grouped);
-
                     return $grouped;
                 });
             }),

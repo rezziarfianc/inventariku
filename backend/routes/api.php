@@ -5,14 +5,12 @@ use App\Http\Controllers\Api\V1\BrandController;
 use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\ProductController;
 use App\Http\Controllers\Api\V1\SupplyController;
+use App\Http\Controllers\Api\V1\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 
 Route::prefix('v1')->group(function () {
-    Route::get('/user', function (Request $request) {
-        return $request->user();
-    })->middleware('auth:sanctum');
     Route::post('/auth/login', [AuthController::class, 'login'])->name('login');
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/auth/logout', [AuthController::class, 'logout'])->name('logout');
@@ -33,6 +31,11 @@ Route::prefix('v1')->group(function () {
         // Brand Routes
         Route::apiResource('brands', BrandController::class);
         Route::get('brands/{brand}/audits', [BrandController::class, 'auditHistory'])->name('brands.view');
+
+        // User Routes
+        Route::apiResource('users', UserController::class);
+        Route::get('users/{user}/audits', [UserController::class, 'auditHistory'])->name('users.view');
+        Route::put('users/restore/{user}', [UserController::class, 'restore'])->name('users.restore');
 
     });
 });
