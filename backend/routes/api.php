@@ -1,12 +1,12 @@
 <?php
 
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\BrandController;
 use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\ProductController;
 use App\Http\Controllers\Api\V1\SupplyController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
 
 
 Route::prefix('v1')->group(function () {
@@ -25,8 +25,14 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('products', ProductController::class);
         Route::get('products/{product}/audits', [ProductController::class, 'auditHistory'])->name('products.view');
 
+        // Supply Routes
         Route::get('supply/', [SupplyController::class, 'index']);
-        Route::get('supply/{supply_flow_id}', [SupplyController::class, 'show']);
+        Route::get('supply/{supply_flow}', [SupplyController::class, 'show']);
+        Route::post('supply/', [SupplyController::class, 'create']);
+
+        // Brand Routes
+        Route::apiResource('brands', BrandController::class);
+        Route::get('brands/{brand}/audits', [BrandController::class, 'auditHistory'])->name('brands.view');
 
     });
 });
