@@ -23,8 +23,8 @@ class UpdateCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['sometimes', 'string', 'max:30'],
-            'description' => ['nullable', 'string'],
+            'name' => 'sometimes|string|max:30',
+            'description' => 'nullable|string',
         ];
     }
 }

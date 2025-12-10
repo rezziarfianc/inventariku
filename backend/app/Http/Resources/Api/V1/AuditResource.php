@@ -18,8 +18,12 @@ class AuditResource extends JsonResource
             'audit_id' => (string) $this->id,
             'user_id' => (string) $this->user_id,
             'event' => $this->event,
-            'old_values' => $this->old_values,
-            'new_values' => $this->new_values,
+            'old_values' => collect($this->old_values)->filter(function ($value, $key) {
+                return $key !== 'password';
+            }),
+            'new_values' => collect($this->new_values)->filter(function ($value, $key) {
+                return $key !== 'password';
+            }),
             'created_at' => $this->created_at,
             'user' => $this->whenLoaded('user', function () {
                 return [

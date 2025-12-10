@@ -23,12 +23,12 @@ class GetSupplyRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'per_page' => ['sometimes', 'integer', 'min:1', 'max:100'],
-            'page' => ['sometimes', 'integer', 'min:1'],
-            'sort_by' => ['sometimes', 'string', 'in:quantity,created_at'],
-            'sort_order' => ['sometimes', 'string', 'in:asc,desc'],
-            'flow_type' => ['sometimes', 'string', 'in:inbound,outbound'],
-            'product_id' => ['sometimes', 'integer', 'exists:products,product_id'],
+            'per_page' => 'sometimes|integer|min:1|max:100',
+            'page' => 'sometimes|integer|min:1',
+            'sort_by' => 'sometimes|string|in:quantity,created_at',
+            'sort_order' => 'sometimes|string|in:asc,desc',
+            'flow_type' => 'sometimes|string|in:inbound,outbound',
+            'product_id' => 'sometimes|integer|exists:products,product_id',
         ];
     }
 }

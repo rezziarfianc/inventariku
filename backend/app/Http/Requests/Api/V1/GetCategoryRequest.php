@@ -23,10 +23,10 @@ class GetCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'per_page' => ['sometimes', 'integer', 'min:1', 'max:100'],
-            'page' => ['sometimes', 'integer', 'min:1'],
-            'sort_by' => ['sometimes', 'string', 'in:name,created_at,updated_at'],
-            'sort_order' => ['sometimes', 'string', 'in:asc,desc'],
+            'per_page' => 'sometimes|integer|min:1|max:100',
+            'page' => 'sometimes|integer|min:1',
+            'sort_by' => 'sometimes|string|in:name,created_at,updated_at',
+            'sort_order' => 'sometimes|string|in:asc,desc',
         ];
     }
 }

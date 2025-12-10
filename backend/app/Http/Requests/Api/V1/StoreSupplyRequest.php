@@ -23,9 +23,9 @@ class StoreSupplyRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'quantity' => ['required', 'numeric', 'min:0'],
-            'flow_type' => ['required', 'string', 'in:inbound,outbound'],
-            'product_id' => ['required', 'integer', 'exists:products,product_id'],
+            'quantity' => 'required|numeric|min:0',
+            'flow_type' => 'required|string|in:inbound,outbound',
+            'product_id' => 'required|integer|exists:products,product_id',
         ];
     }
 }

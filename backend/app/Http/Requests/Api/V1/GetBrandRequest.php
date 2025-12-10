@@ -24,6 +24,7 @@ class GetBrandRequest extends FormRequest
     {
         return [
             'name' => 'sometimes|string|max:30',
+            'page' => 'sometimes|integer|min:1',
             'per_page' => 'sometimes|integer|min:1|max:100',
             'sort_by' => 'sometimes|string|in:brand_id,name,created_at,updated_at',
             'sort_order' => 'sometimes|string|in:asc,desc',
