@@ -5,14 +5,14 @@ namespace App\Http\Requests\Api\V1;
 use Gate;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreSupplyRequest extends FormRequest
+class UpdateBrandRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return Gate::allows('supplies.create');
+        return Gate::allows('brands.update');
     }
 
     /**
@@ -23,9 +23,8 @@ class StoreSupplyRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'quantity' => ['required', 'numeric', 'min:0'],
-            'flow_type' => ['required', 'string', 'in:inbound,outbound'],
-            'product_id' => ['required', 'integer', 'exists:products,product_id'],
+            'name' => 'sometimes|string|max:30|unique:brands,code',
+            'description' => 'sometimes|string',
         ];
     }
 }

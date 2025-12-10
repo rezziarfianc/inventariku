@@ -22,7 +22,7 @@ class SupplyFlowResource extends JsonResource
             }),
             'flow_type' => $this->flow_type,
             'quantity' => $this->quantity,
-            'created_at' => $this->created_at,
+            'created_at' => $this->created_at
         ];
     }
 }

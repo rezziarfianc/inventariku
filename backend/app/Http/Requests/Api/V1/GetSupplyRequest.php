@@ -27,7 +27,8 @@ class GetSupplyRequest extends FormRequest
             'page' => ['sometimes', 'integer', 'min:1'],
             'sort_by' => ['sometimes', 'string', 'in:quantity,created_at'],
             'sort_order' => ['sometimes', 'string', 'in:asc,desc'],
-            'flow_type' => ['sometimes', 'string', 'in:inbound,outbound']
+            'flow_type' => ['sometimes', 'string', 'in:inbound,outbound'],
+            'product_id' => ['sometimes', 'integer', 'exists:products,product_id'],
         ];
     }
 }

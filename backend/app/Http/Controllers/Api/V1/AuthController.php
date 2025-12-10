@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Helpers\ApiHelper;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\UserResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -18,6 +19,8 @@ class AuthController extends Controller
         }
 
         $user = auth()->user();
+        $user->load(['roles', 'permissions']);
+        $user->getAllPermissions();
         $validUntil = now()->addHour();
         $token = $user->createToken('auth_token', expiresAt: $validUntil)->plainTextToken;
 
@@ -25,6 +28,7 @@ class AuthController extends Controller
             'access_token' => $token,
             'token_type' => 'Bearer',
             'valid_until' => $validUntil->toDateTimeString(),
+            'user' => new UserResource($user),
         ], 'Login successful');
     }
 
@@ -35,5 +39,5 @@ class AuthController extends Controller
 
         return ApiHelper::success(message: 'Logout successful');
     }
-    
+
 }
