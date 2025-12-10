@@ -39,7 +39,7 @@ class UserSeeder extends Seeder
             'password' => 'password',
         ]);
 
-        $resorces = ['users', 'categories', 'products', 'supplies'];
+        $resorces = ['users', 'categories', 'products', 'supplies', 'brands'];
         $actions = ['create', 'view', 'update', 'delete'];
 
         $adminRole = Role::firstOrCreate(['name' => 'admin']);
