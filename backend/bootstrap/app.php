@@ -5,6 +5,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use App\Helpers\ApiHelper;
 use \Illuminate\Http\JsonResponse;
@@ -40,7 +41,12 @@ return Application::configure(basePath: dirname(__DIR__))
             return ApiHelper::error('Endpoint Not Found', 404);
         });
 
+        $exceptions->render(function (ValidationException $e) {
+            return ApiHelper::validationError('Validation Error(s)',$e->errors());
+        });
+
         $exceptions->render(function (Throwable $e) {
+            \Log::error($e);
             return ApiHelper::error($e->getMessage(), 500);
         });
     })->create();

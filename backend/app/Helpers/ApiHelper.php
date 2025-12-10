@@ -21,11 +21,21 @@ class ApiHelper
             ];
         }
 
-        $response = [
-            'success' => $status,
-            'message' => $message,
-            'data' => $data,
-        ];
+        if ($code === 422) {
+            $response = [
+                'success' => $status,
+                'message' => $message,
+                'errors' => $data,
+            ];
+        } else {
+            $response = [
+                'success' => $status,
+                'message' => $message,
+                'data' => $data,
+            ];
+        }
+
+
         if ($pagination) {
             $response['meta'] = $pagination;
         }
@@ -58,8 +68,8 @@ class ApiHelper
         return self::response($data, $message, false, 403);
     }
 
-    public static function validationError($message = 'Validation Error', $data = null)
+    public static function validationError($message = 'Validation Error', $errors = null)
     {
-        return self::response($data, $message, false, 422);
+        return self::response($errors, $message, false, 422);
     }
 }
