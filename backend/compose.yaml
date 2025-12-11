@@ -84,6 +84,8 @@ services:
         ports:
         - "3000:3000"
         env_file: .env.whatsapp
+        networks:
+            - sail
         volumes:
         - ./sessions:/usr/src/app/sessions
 
