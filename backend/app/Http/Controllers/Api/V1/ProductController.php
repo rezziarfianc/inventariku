@@ -172,12 +172,17 @@ class ProductController extends Controller
                     'quantity' => $quantity,
                 ]);
 
-                SupplyFlow::create([
+                $supplyFlow = SupplyFlow::create([
                     'supply_id' => $product->supply->supply_id,
                     'flow_type' => $flowType,
                     'product_id' => $product->product_id,
                     'quantity' => abs($qtyDiff),
                 ]);
+
+                if ($product->supply->quantity <= $product->low_stock_threshold && $flowType === 'outbound') {
+                    $whatsappService = app(\App\Services\WhatsappService::class);
+                    $whatsappService->sendNotification($supplyFlow);
+                }
 
             }
 

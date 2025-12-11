@@ -127,6 +127,11 @@ class SupplyController extends Controller
             DB::commit();
             $supplyFlow->load(['product', 'supply']);
 
+            if ($supply->quantity <= $product->low_stock_threshold && $flowType === 'outbound') {
+                $whatsappService = app(\App\Services\WhatsappService::class);
+                $whatsappService->sendNotification($supplyFlow);
+            }
+
             $supplyFlow = new SupplyFlowResource($supplyFlow);
             return ApiHelper::success($supplyFlow, 'Supply flow created successfully', 201);
 
@@ -138,5 +143,6 @@ class SupplyController extends Controller
             return ApiHelper::error('An error occurred while creating flow.', 500);
         }
     }
+
 
 }
