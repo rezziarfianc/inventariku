@@ -5,11 +5,13 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useNavigate,
+  useHref
 } from "react-router";
 
 import type { Route } from "./+types/root";
 import "./app.css";
-import { HeroUIProvider } from "@heroui/react";
+import { HeroUIProvider, Spinner } from "@heroui/react";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -23,6 +25,24 @@ export const links: Route.LinksFunction = () => [
     href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
   },
 ];
+
+// In SPA mode, this runs on the client browser
+export async function loader() {
+  return {
+    version: 1234,
+  };
+}
+
+export function HydrateFallback() {
+  return (
+    <div className="flex h-screen w-full items-center justify-center">
+      <div className="flex flex-col items-center gap-2">
+        <h1>Loading Inventariku...</h1>
+        <Spinner />
+      </div>
+    </div>
+  );
+}
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -42,10 +62,18 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function App() {
-  return <HeroUIProvider><Outlet /></HeroUIProvider>;
-}
+import { AuthProvider } from "~/context/authContext";
 
+export default function App() {
+  const navigate = useNavigate();
+  return (
+    <HeroUIProvider navigate={navigate} useHref={useHref}>
+      <AuthProvider>
+        <Outlet />
+      </AuthProvider>
+    </HeroUIProvider>
+  );
+}
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   let message = "Oops!";

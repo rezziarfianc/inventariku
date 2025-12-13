@@ -1,10 +1,9 @@
-import React from "react";
 import {
     Drawer,
     DrawerContent,
     DrawerBody,
 } from "@heroui/react";
-import SidebarContent from "./sidebarContent";
+import SidebarContent from "./SidebarContent";
 
 interface SidebarProps {
     isOpen: boolean;

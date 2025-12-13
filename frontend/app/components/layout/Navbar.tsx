@@ -11,12 +11,15 @@ import {
     NavbarItem,
 } from "@heroui/react";
 import { Menu } from "lucide-react";
+import { useAuth } from "~/context/authContext";
 
 interface NavbarProps {
     onOpen: () => void;
 }
 
 export default function Navbar({ onOpen }: NavbarProps) {
+    const { user, logout } = useAuth();
+
     return (
         <HeroNavbar
             isBordered
@@ -38,27 +41,27 @@ export default function Navbar({ onOpen }: NavbarProps) {
                 <Dropdown placement="bottom-end">
                     <DropdownTrigger>
                         <User
-                            name="admin"
-                            description="Admin"
+                            name={user?.name || "User"}
+                            description={user?.roles?.[0] || "User"}
                             avatarProps={{
                                 isBordered: true,
                                 size: "sm",
-                                name: "admin",
+                                name: user?.name || "User",
                                 className: "bg-primary/10 text-primary"
                             }}
                             classNames={{
                                 base: "cursor-pointer flex",
                                 name: "text-sm font-semibold hidden md:flex",
-                                description: "text-xs hidden md:flex"
+                                description: "text-xs hidden md:flex capitalize"
                             }}
                         />
                     </DropdownTrigger>
                     <DropdownMenu aria-label="Profile Actions" variant="flat">
                         <DropdownItem key="profile" className="h-14 gap-2 md:hidden">
                             <p className="font-semibold">Signed in as</p>
-                            <p className="font-semibold">Admin@example.com</p>
+                            <p className="font-semibold">{user?.email}</p>
                         </DropdownItem>
-                        <DropdownItem key="logout" color="danger">
+                        <DropdownItem key="logout" color="danger" onPress={() => logout()}>
                             Log Out
                         </DropdownItem>
                     </DropdownMenu>

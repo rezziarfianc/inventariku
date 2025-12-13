@@ -1,12 +1,11 @@
 import type { Route } from "./+types/index";
-import React from "react";
+
 
 export function meta({ }: Route.MetaArgs) {
     return [
         { title: "Dashboard - Inventariku" }
     ];
 }
-
 
 export default function Index() {
     return (

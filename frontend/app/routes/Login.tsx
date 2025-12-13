@@ -1,8 +1,10 @@
 import React from "react";
-import { Form, Input, Button, Card, CardBody, CardHeader } from "@heroui/react";
+import { Form, Input, Button, Card, CardBody, CardHeader, Alert } from "@heroui/react";
 import type { Route } from "./+types/login";
 import type { FormEvent } from "react";
 import { Box } from 'lucide-react';
+import { loginUser } from "~/api/authApi";
+import type { LoginCredentials } from "~/types/api";
 
 export function meta({ }: Route.MetaArgs) {
     return [
@@ -11,13 +13,38 @@ export function meta({ }: Route.MetaArgs) {
     ];
 }
 
-export default function Login() {
-    const [action, setAction] = React.useState<string | null>(null);
+import { useAuth } from "~/context/authContext";
 
-    const submitHandler = (e: FormEvent<HTMLFormElement>) => {
+export default function Login() {
+    const [alert, setAlert] = React.useState<string | null>(null);
+    const [isLoading, setLoading] = React.useState<boolean>(false);
+    const { login } = useAuth();
+
+    const submitHandler = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         let data = Object.fromEntries(new FormData(e.currentTarget));
-        setAction(`submit ${JSON.stringify(data)}`);
+
+        const creds: LoginCredentials = {
+            email: data.email as string,
+            password: data.password as string
+        }
+
+        try {
+            setAlert(null);
+            setLoading(true);
+            await new Promise(r => setTimeout(r, 2000));
+            await login(creds);
+
+        } catch (error: unknown) {
+            let message = "Failed, unknown error";
+            if (error instanceof Error) {
+                message = error.message;
+            }
+
+            setLoading(false);
+            setAlert(message)
+            console.error(e)
+        }
     }
 
     return (
@@ -32,10 +59,16 @@ export default function Login() {
                         className="w-full max-w-xs flex flex-col gap-4 pb-5"
                         onSubmit={submitHandler}
                     >
+                        {alert && (
+                            <div className="flex items-center justify-center w-full">
+                                <Alert hideIcon color="danger" description={alert} title="failed to login" variant="faded" />
+                            </div>
+                        )}
                         <Input
                             isRequired
                             errorMessage="Please enter a valid email"
                             label="Email"
+                            isDisabled={isLoading}
                             labelPlacement="outside"
                             name="email"
                             placeholder="Enter your email"
@@ -45,20 +78,16 @@ export default function Login() {
                         <Input
                             isRequired
                             errorMessage="Please enter your password"
+                            isDisabled={isLoading}
                             label="Password"
                             labelPlacement="outside"
                             name="password"
                             placeholder="Enter your password"
                             type="password"
                         />
-                        <Button color="primary" type="submit" variant="solid" fullWidth className="mt-4">
+                        <Button color="primary" type="submit" variant="solid" fullWidth className="mt-4" isLoading={isLoading}>
                             Login
                         </Button>
-                        {action && (
-                            <div className="text-small text-default-500">
-                                Action: <code>{action}</code>
-                            </div>
-                        )}
                     </Form>
                 </CardBody>
             </Card>

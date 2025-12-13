@@ -1,0 +1,107 @@
+import {
+    Button,
+    Listbox,
+    ListboxItem,
+    User,
+} from "@heroui/react";
+import {
+    LayoutDashboard,
+    Settings,
+    Users,
+    LogOut,
+    CreditCard,
+    Box,
+    ArrowUpDown,
+    Package
+} from "lucide-react";
+import { useLocation } from "react-router";
+import { useAuth } from "~/context/authContext";
+
+
+const activeStyle = "rounded-lg bg-primary/5 text-primary font-semibold";
+const inactiveStyle = "";
+const commonIconStyle = "text-default-500";
+
+export default function SidebarContent() {
+    const location = useLocation();
+    const { user } = useAuth();
+
+    const navigationItems = [
+        {
+            key: "/",
+            title: "Dashboard",
+            icon: <LayoutDashboard size={20} className={commonIconStyle} />,
+            isVisible: true,
+        },
+        {
+            key: "users",
+            title: "Users",
+            icon: <Users size={20} className={commonIconStyle} />,
+            isVisible: user?.roles?.includes('admin'),
+        },
+        {
+            key: "stock",
+            title: "Stock Flow",
+            icon: <ArrowUpDown size={20} className={commonIconStyle} />,
+            isVisible: user?.can?.supplies?.includes('view'),
+        },
+        {
+            key: "products",
+            title: "Products",
+            icon: <Package size={20} className={commonIconStyle} />,
+            isVisible: user?.can?.products?.includes('view'),
+        },
+        {
+            key: "categories",
+            title: "Categories",
+            icon: <Box size={20} className={commonIconStyle} />,
+            isVisible: user?.can?.categories?.includes('view'),
+        },
+        {
+            key: "settings",
+            title: "Settings",
+            icon: <Settings size={20} className={commonIconStyle} />,
+            isVisible: true,
+        },
+    ];
+
+    const visibleItems = navigationItems.filter(item => item.isVisible);
+
+    return (
+        <div className="h-full flex flex-col justify-between bg-background">
+            <div className="flex-1">
+                {/* Logo */}
+                <div className="flex items-center text-center gap-3 px-6 py-3 border-b border-default-200">
+                    <div className="bg-primary/10 p-1 rounded-small"><Box size={32} className="text-primary" /></div>
+                    <span className="text-center text-xl font-bold tracking-tight text-primary">Inventariku</span>
+                </div>
+
+                {/* Navigation Menu */}
+                <div className="px-3">
+                    <Listbox
+                        aria-label="Navigation"
+                        variant="flat"
+                        classNames={{
+                            list: "gap-2" // Adds spacing between items
+                        }}
+                        selectionMode="single"
+                        selectedKeys={[location.pathname]}
+                    >
+                        {visibleItems.map((item) => (
+                            <ListboxItem
+                                href={'/' + item.key.replace(/^\//, '')}
+                                key={item.key}
+                                startContent={item.icon}
+                                // className={item.active ? activeStyle : inactiveStyle}
+                                hideSelectedIcon
+                            >
+                                {item.title}
+                            </ListboxItem>
+                        ))}
+                    </Listbox>
+                </div>
+            </div>
+
+        </div>
+    )
+}
