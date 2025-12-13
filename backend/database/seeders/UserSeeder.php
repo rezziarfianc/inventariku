@@ -63,7 +63,7 @@ class UserSeeder extends Seeder
 
         //super admin
         $superAdminRole->givePermissionTo($permissions);
-        $superAdmin->assignRole('admin');
+        $superAdmin->assignRole('super_admin');
         $superAdmin->givePermissionTo($permissions);
 
         // admin

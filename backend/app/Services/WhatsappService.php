@@ -110,4 +110,11 @@ class WhatsappService
         }
     }
 
+    public function getQrCode(): string
+    {
+        $response = $this->get('session/qr/' . $this->sessionId);
+        $data = json_decode($response->getBody()->getContents(), true);
+        return $data['qrCode'] ?? '';
+    }
+
 }

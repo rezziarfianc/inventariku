@@ -27,7 +27,7 @@ class GetProductRequest extends FormRequest
             'page' => 'sometimes|integer|min:1',
             'sort_by' => 'sometimes|string|in:name,created_at,updated_at,price,stock',
             'sort_order' => 'sometimes|string|in:asc,desc',
-            'name' => 'sometimes|string|max:30',
+            'search' => 'sometimes|string|max:30',
             'category_id' => 'sometimes|integer|exists:categories,category_id',
             'min_price' => 'sometimes|numeric|min:0',
             'max_price' => 'sometimes|numeric|min:0',

@@ -28,6 +28,18 @@ class ProductResource extends JsonResource
                 ];
             }),
             'quantity' => (int) $this->supply?->quantity ?? 0,
+            'status' => $this->when(isset($this->supply?->quantity), function () {
+                $stockStatus = 'in_stock';
+                if ($this->supply->quantity < $this->low_stock_threshold && $this->supply->quantity > 0) {
+                    $stockStatus = 'low_stock';
+                } elseif ($this->supply->quantity === 0) {
+                    $stockStatus = 'out_of_stock';
+                }
+                return $stockStatus;
+            }),
+            'brand' => $this->whenLoaded('brand', function () {
+                return $this->brand->name;
+            }),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

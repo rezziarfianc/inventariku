@@ -26,6 +26,13 @@ class Product extends Model implements Auditable
         return $this->hasOne(Supply::class, 'product_id');
     }
 
+    
+    public function brand()
+    {
+        return $this->belongsTo(Brand::class, 'brand_id');
+    }
+
+
     public function getAuditCustomFields(): array
     {
         return ['name', 'description', 'price', 'category_id', 'low_stock_threshold'];

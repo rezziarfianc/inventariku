@@ -12,14 +12,15 @@ class BrandSeeder extends Seeder
      */
     public function run(): void
     {
-        $now = now();
         $brands = [
-            ['name' => 'Yona', 'description' => 'Description for Brand A', 'code' => 'yona', 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'Endura', 'description' => 'Description for Brand B', 'code' => 'endura', 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'Pedan', 'description' => 'Description for Brand C', 'code' => 'pedan', 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'Hemato', 'description' => 'Description for Brand D', 'code' => 'hemato', 'created_at' => $now, 'updated_at' => $now],
+            ['name' => 'Yona', 'description' => 'Description for Brand A', 'code' => 'yona'],
+            ['name' => 'Endura', 'description' => 'Description for Brand B', 'code' => 'endura'],
+            ['name' => 'Pedan', 'description' => 'Description for Brand C', 'code' => 'pedan'],
+            ['name' => 'Hemato', 'description' => 'Description for Brand D', 'code' => 'hemato'],
         ];
 
-        Brand::insert($brands);
+        foreach ($brands as $brand) {
+            Brand::create($brand);
+        }
     }
 }

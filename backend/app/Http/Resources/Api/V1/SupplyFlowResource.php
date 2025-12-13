@@ -22,7 +22,8 @@ class SupplyFlowResource extends JsonResource
             }),
             'flow_type' => $this->flow_type,
             'quantity' => $this->quantity,
-            'created_at' => $this->created_at
+            'created_at' => $this->created_at,
+            'latest_audit' => $this->audits->last() ? new AuditResource($this->audits->last()) : null
         ];
     }
 }

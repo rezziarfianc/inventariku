@@ -30,8 +30,8 @@ class ProductController extends Controller
             if (isset($validated['sort_by']) && isset($validated['sort_order'])) {
                 $products->orderBy($validated['sort_by'], $validated['sort_order']);
             }
-            if (isset($validated['name'])) {
-                $products->where('name', 'like', '%' . $validated['name'] . '%');
+            if (isset($validated['search'])) {
+                $products->where('name', 'like', '%' . $validated['search'] . '%');
             }
             if (isset($validated['category_id'])) {
                 $products->where('category_id', $validated['category_id']);
@@ -60,7 +60,7 @@ class ProductController extends Controller
                         break;
                 }
             } else {
-                $products->with('supply');
+                $products->with(['supply', 'category', 'brand']);
             }
             $paginatedProducts = $products->paginate($perPage);
             $paginatedProducts = ProductResource::collection($paginatedProducts);
@@ -85,6 +85,7 @@ class ProductController extends Controller
         } else {
             $audits->latest();
         }
+        $audits->with(['user']);
 
         $audits = $audits->paginate($validated['per_page'] ?? 10);
         $audits = AuditResource::collection($audits);
@@ -106,7 +107,7 @@ class ProductController extends Controller
                 'quantity' => $quantity,
             ]);
 
-            $product->load(['supply', 'category']);
+            $product->load(['supply', 'category', 'brand']);
 
             if ($quantity > 0) {
                 SupplyFlow::create([

@@ -65,7 +65,7 @@ class SupplyController extends Controller
                 }
             }
 
-            $supplyFlows = $supplyFlows->with(['product']);
+            $supplyFlows = $supplyFlows->with(['product', 'audits.user']);
             
             $paginatedSupplyFlows = $supplyFlows->paginate($perPage);
             $paginatedSupplyFlows = SupplyFlowResource::collection($paginatedSupplyFlows);
