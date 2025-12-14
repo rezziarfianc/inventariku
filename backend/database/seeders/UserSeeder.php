@@ -75,7 +75,7 @@ class UserSeeder extends Seeder
 
         // staff
         $staffPermissions = $permissions->filter(function ($permission) {
-            return str_starts_with($permission, 'supplies.') || str_starts_with($permission, 'supply_flows.');
+            return str_starts_with($permission, 'supplies.') || str_starts_with($permission, 'supply_flows.') || $permission == 'products.view';
         })->toArray();
         $staffRole->givePermissionTo($staffPermissions);
         $staff->assignRole('staff');
