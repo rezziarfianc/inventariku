@@ -29,6 +29,8 @@ class GetSupplyRequest extends FormRequest
             'sort_order' => 'sometimes|string|in:asc,desc',
             'flow_type' => 'sometimes|string|in:inbound,outbound',
             'product_id' => 'sometimes|integer|exists:products,product_id',
+            'start_date' => 'sometimes|date',
+            'end_date' => 'sometimes|date',
         ];
     }
 }

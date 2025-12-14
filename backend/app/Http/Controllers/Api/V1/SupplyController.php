@@ -45,6 +45,12 @@ class SupplyController extends Controller
                 $supplyFlows->whereIn('product_id', $productIds);
             }
 
+            if (isset($validated['start_date']) && isset($validated['end_date'])) {
+                $startDate = \Carbon\Carbon::parse($validated['start_date'])->startOfDay();
+                $endDate = \Carbon\Carbon::parse($validated['end_date'])->endOfDay();
+                $supplyFlows->whereBetween('created_at', [$startDate, $endDate]);
+            }
+
             if (isset($validated['stock_status'])) {
                 switch ($validated['stock_status']) {
                     case 'in_stock':
