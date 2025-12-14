@@ -1,5 +1,5 @@
 import { Outlet } from "react-router";
-import type { Route } from "./+types/dashboard";
+import type { Route } from "./+types/Dashboard";
 import React from "react";
 import { useDisclosure } from "@heroui/react";
 import Navbar from "~/components/layout/Navbar";

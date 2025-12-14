@@ -27,7 +27,7 @@ export default function SidebarContent() {
 
     const navigationItems = [
         {
-            key: "/",
+            key: "/dashboard",
             title: "Dashboard",
             icon: <LayoutDashboard size={20} />,
             isVisible: true,

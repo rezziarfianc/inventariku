@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import type { Route } from "./+types/Dashboard";
+import type { Route } from "./+types/Index";
 import { useAnalytic } from "~/hooks/useAnalytic";
 import LineChart from "~/components/feature/dashboard/LineChart";
 import DateFilter from "~/components/feature/dashboard/DateFilter";
@@ -18,7 +18,7 @@ export function meta({ }: Route.MetaArgs) {
     ];
 }
 
-export default function Index() {
+export default function Dashboard() {
 
     const { isLoading, error, analytics, setFilter, fetchAnalytics, trendData } = useAnalytic();
     const [currentFilter, setCurrentFilter] = useState<Record<string, any> | null>(null);
