@@ -104,7 +104,7 @@ class WhatsappService
             Product: {$product->name}\n
             *{$product->name}* is now low on stock (*{$supply->quantity}* units) after an *{$supplyFlow->flow_type}* of *{$supplyFlow->quantity}* units.\n
             Please take action to restock.";
-            $this->sendMessage('6289601871947', preg_replace('/[ \t]+/', ' ', $message));
+            $this->sendMessage(env('WA_NOTIFICATION_NUMBER', 6289601871947), preg_replace('/[ \t]+/', ' ', $message));
         } catch (\Exception $e) {
             \Log::error("Failed to send stock alert for product {$product->product_id}: {$e->getMessage()}");
         }
