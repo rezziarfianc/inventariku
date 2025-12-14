@@ -60,7 +60,6 @@ export default function Dashboard() {
             <div className="row flex flex-col md:flex-row md:justify-between items-start md:items-center">
                 <div className="flex flex-col w-auto mb-4 md:mb-0">
                     <h1 className="text-2xl font-bold">Overview</h1>
-                    <p className="text-gray-500">You can see the overview of your inventory here</p>
                 </div>
                 <div className="flex flex-row gap-4">
                     <DateFilter onPress={handleFilterChange} />
@@ -101,7 +100,7 @@ export default function Dashboard() {
                     </div>
 
                     <div className="w-full flex flex-col gap-4">
-                        <h2 className="text-xl font-bold px-2">Flow Transactions</h2>
+                        <h2 className="text-xl font-bold px-2">Transactions</h2>
                         <Card className="p-4">
                             <TransactionTable filter={currentFilter} />
                         </Card>

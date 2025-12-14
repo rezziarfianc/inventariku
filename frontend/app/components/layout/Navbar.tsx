@@ -19,6 +19,7 @@ interface NavbarProps {
 
 export default function Navbar({ onOpen }: NavbarProps) {
     const { user, logout } = useAuth();
+    const role = user?.roles?.[0] || "User";
 
     return (
         <HeroNavbar
@@ -42,7 +43,7 @@ export default function Navbar({ onOpen }: NavbarProps) {
                     <DropdownTrigger>
                         <User
                             name={user?.name || "User"}
-                            description={user?.roles?.[0] || "User"}
+                            description={role.replaceAll("_", " ")}
                             avatarProps={{
                                 isBordered: true,
                                 size: "sm",

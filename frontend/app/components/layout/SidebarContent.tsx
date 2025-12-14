@@ -1,18 +1,14 @@
 import {
-    Button,
     Listbox,
     ListboxItem,
-    User,
 } from "@heroui/react";
 import {
     LayoutDashboard,
-    Settings,
     Users,
-    LogOut,
-    CreditCard,
     Box,
     ArrowUpDown,
-    Package
+    Package,
+    Boxes
 } from "lucide-react";
 import { useLocation } from "react-router";
 import { useAuth } from "~/context/authContext";
@@ -36,13 +32,13 @@ export default function SidebarContent() {
             key: "/users",
             title: "Users",
             icon: <Users size={20} />,
-            isVisible: user?.roles?.includes('admin'),
+            isVisible: user?.can?.users?.includes('view'),
         },
         {
-            key: "/stock",
-            title: "Stock Flow",
-            icon: <ArrowUpDown size={20} />,
-            isVisible: user?.can?.supplies?.includes('view'),
+            key: "/categories",
+            title: "Categories",
+            icon: <Boxes size={20} />,
+            isVisible: user?.can?.categories?.includes('view'),
         },
         {
             key: "/products",
@@ -51,11 +47,11 @@ export default function SidebarContent() {
             isVisible: user?.can?.products?.includes('view'),
         },
         {
-            key: "/categories",
-            title: "Categories",
-            icon: <Box size={20} />,
-            isVisible: user?.can?.categories?.includes('view'),
-        }
+            key: "/stock",
+            title: "Stock Flow",
+            icon: <ArrowUpDown size={20} />,
+            isVisible: user?.can?.supplies?.includes('view'),
+        },
     ];
 
     const visibleItems = navigationItems.filter(item => item.isVisible);

@@ -114,8 +114,6 @@ export default function UserModal({ isOpen, onOpenChange, onClose, user, onSave 
             if (user && payload.email === initialEmail) {
                 delete (payload as any).email;
             }
-            // If creating, we keep email. Only omit on update if unchanged.
-
             await onSave(payload);
             onClose();
         } catch (error: any) {

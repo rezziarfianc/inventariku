@@ -24,9 +24,6 @@ export default function UserDetailModal({ isOpen, onOpenChange, onClose, user }:
     const size = "2xl";
 
     if (!user) return null;
-
-
-
     const permissions = Object.entries(user.can || {}).map(([key, value]) => ({
         feature: key,
         actions: value
@@ -63,7 +60,7 @@ export default function UserDetailModal({ isOpen, onOpenChange, onClose, user }:
                                         {user.roles && user.roles.length > 0 ? (
                                             user.roles.map((role, index) => (
                                                 <Chip key={index} color="primary" variant="flat" size="sm" className="capitalize">
-                                                    {role}
+                                                    {role.replaceAll("_", " ")}
                                                 </Chip>
                                             ))
                                         ) : (
@@ -72,7 +69,7 @@ export default function UserDetailModal({ isOpen, onOpenChange, onClose, user }:
                                     </div>
                                 </div>
                                 <div className="flex flex-col gap-1.5">
-                                    <span className="text-small text-default-500">Joined At</span>
+                                    <span className="text-small text-default-500">Created At</span>
                                     <span className="text-small">{createDate}</span>
                                 </div>
                             </div>

@@ -17,8 +17,6 @@ export default function Index() {
                 <p className="text-gray-500">
                     You are logged in to Inventariku System.
                 </p>
-
-
             </Card>
         </div>
     );

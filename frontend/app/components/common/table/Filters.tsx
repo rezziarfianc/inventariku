@@ -8,7 +8,7 @@ export default function Filters() {
     const {
         search, // Global search from context
         setPage,
-        setSearch, // Function to update global search
+        setSearch,
         setSortDescriptor,
         sortDescriptor,
         sortOptions = [],
@@ -23,7 +23,6 @@ export default function Filters() {
     const [localSearch, setLocalSearch] = useState(search || "");
     const debouncedSearch = useDebounce(localSearch, 500);
 
-    // Sync local state if global search changes externally (e.g. clear filters)
     useEffect(() => {
         setLocalSearch(search || "");
     }, [search]);

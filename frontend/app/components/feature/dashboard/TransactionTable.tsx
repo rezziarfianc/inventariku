@@ -4,6 +4,7 @@ import { getSupplies } from "~/api/stockApi";
 import { useTableData } from "~/hooks/useTableData";
 import type { SupplyFlow } from "~/types/supply";
 import moment from "moment";
+import { ArrowDown, ArrowUp } from "lucide-react";
 
 interface TransactionTableProps {
     filter: Record<string, any> | null;
@@ -45,7 +46,6 @@ export default function TransactionTable({ filter }: TransactionTableProps) {
         initialSort: { column: "created_at", direction: "descending" }
     });
 
-    // Calculate pages manually since hook returns totalItems
     const pages = useMemo(() => {
         return totalItems > 0 ? Math.ceil(totalItems / rowsPerPage) : 0;
     }, [totalItems, rowsPerPage]);
@@ -74,7 +74,9 @@ export default function TransactionTable({ filter }: TransactionTableProps) {
                 );
             case "flow_type":
                 return (
-                    <Chip className="capitalize" color={item.flow_type === "inbound" ? "success" : "danger"} size="sm" variant="flat">
+                    <Chip className="capitalize" 
+                        color={item.flow_type === "inbound" ? "success" : "danger"} size="sm" variant="flat" 
+                        startContent={item.flow_type === "inbound" ? <ArrowUp size={14} /> : <ArrowDown size={14} />}>
                         {item.flow_type}
                     </Chip>
                 );
@@ -116,10 +118,7 @@ export default function TransactionTable({ filter }: TransactionTableProps) {
             >
                 <TableHeader columns={columns}>
                     {(column) => (
-                        <TableColumn
-                            key={column.uid}
-                            align={column.uid === "actions" ? "center" : "start"}
-                        >
+                        <TableColumn key={column.uid}>
                             {column.name}
                         </TableColumn>
                     )}

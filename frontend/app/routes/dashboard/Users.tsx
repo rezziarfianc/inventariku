@@ -35,7 +35,7 @@ export default function Users() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (currentUser && !currentUser.roles?.includes('admin')) {
+        if (currentUser && !currentUser.can?.users?.includes('view')) {
             navigate("/");
         }
     }, [currentUser, navigate]);
@@ -97,7 +97,7 @@ export default function Users() {
             label: "Edit User",
             icon: <Edit size={18} />,
             onClick: (item: User) => resource.modal.handleEdit(item),
-            isVisible: currentUser?.roles?.includes('admin')
+            isVisible: currentUser?.can?.users?.includes('update')
         },
         {
             key: "delete",
@@ -110,7 +110,7 @@ export default function Users() {
                 }
                 resource.delete.handleDelete(item.user_id);
             },
-            isVisible: currentUser?.roles?.includes('admin')
+            isVisible: currentUser?.can?.users?.includes('delete')
         }
     ].filter(action => action.isVisible !== false);
 

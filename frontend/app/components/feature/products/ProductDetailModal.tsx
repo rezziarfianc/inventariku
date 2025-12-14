@@ -43,6 +43,8 @@ export default function ProductDetailModal({ isOpen, onOpenChange, onClose, prod
     const createDate = moment(product.created_at).format('DD-MM-YYYY HH:mm:ss');
     const updateDate = moment(product.updated_at).format('DD-MM-YYYY HH:mm:ss');
 
+    const stockStatusColor = product.status === "in_stock" ? "success" : product.status === "low_stock" ? "warning" : "danger";
+
     return (
         <Modal isOpen={isOpen} onOpenChange={onOpenChange} size={size} backdrop="blur" onClose={onClose}>
             <ModalContent>
@@ -66,12 +68,8 @@ export default function ProductDetailModal({ isOpen, onOpenChange, onClose, prod
                                     <span className="text-small">{typeof product.category === 'object' ? product.category?.name : product.category}</span>
                                 </div>
                                 <div className="flex flex-col gap-1.5">
-                                    <span className="text-small text-default-500">Brand</span>
-                                    <span className="text-small">{typeof product.brand === 'object' ? product.brand?.name : product.brand}</span>
-                                </div>
-                                <div className="flex flex-col gap-1.5">
                                     <span className="text-small text-default-500">Price</span>
-                                    <span className="text-small">Rp {parseInt(product.price as any).toLocaleString()}</span>
+                                    <span className="text-small">Rp. {parseInt(product.price as any).toLocaleString()}</span>
                                 </div>
                                 <div className="flex flex-col gap-1.5">
                                     <span className="text-small text-default-500">Stock</span>
@@ -82,12 +80,12 @@ export default function ProductDetailModal({ isOpen, onOpenChange, onClose, prod
                                 <div className="flex flex-col gap-1.5">
                                     <span className="text-small text-default-500">Status</span>
                                     <Chip
-                                        color={product.status === 'active' ? "success" : "warning"}
+                                        color={stockStatusColor}
                                         variant="flat"
                                         size="sm"
                                         className="capitalize"
                                     >
-                                        {product.status}
+                                        {product.status?.replaceAll("_", " ")}
                                     </Chip>
                                 </div>
                                 <div className="flex flex-col gap-1.5">
@@ -119,7 +117,7 @@ export default function ProductDetailModal({ isOpen, onOpenChange, onClose, prod
                                                         <div className="flex flex-col">
                                                             <div className="flex gap-2 items-center">
                                                                 <Chip size="sm" variant="flat" color={flow.flow_type === 'inbound' ? 'success' : 'warning'} className="h-5 text-[10px]">
-                                                                    {flow.flow_type === 'inbound' ? 'IN' : 'OUT'}
+                                                                    {flow.flow_type === 'inbound' ? 'Inbound' : 'Outbound'}
                                                                 </Chip>
                                                                 <span className="font-semibold">{flow.quantity} units</span>
                                                             </div>

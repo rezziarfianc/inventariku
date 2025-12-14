@@ -100,7 +100,7 @@ export default function StockManagementModal({ isOpen, onOpenChange, onClose, pr
                                 <div className="flex flex-col gap-4 mt-2">
                                     <Input
                                         autoFocus
-                                        label={flowType === 'inbound' ? "Quantity to Add" : "Quantity to Remove"}
+                                        label={flowType === 'inbound' ? "Quantity to Add" : "Quantity to Take"}
                                         placeholder="0"
                                         type="number"
                                         variant="bordered"
@@ -119,15 +119,12 @@ export default function StockManagementModal({ isOpen, onOpenChange, onClose, pr
                             </ModalBody>
 
                             <ModalFooter>
-                                <Button color="danger" variant="flat" onPress={onClose}>
-                                    Cancel
-                                </Button>
                                 <Button
-                                    color={flowType === 'inbound' ? "primary" : "warning"}
+                                    color="primary"
                                     type="submit"
                                     isLoading={isLoading}
                                 >
-                                    {flowType === 'inbound' ? "Add Stock" : "Remove Stock"}
+                                    {flowType === 'inbound' ? "Add Stock" : "Take Stock"}
                                 </Button>
                             </ModalFooter>
                         </Form>

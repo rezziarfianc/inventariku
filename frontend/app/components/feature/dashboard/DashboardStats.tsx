@@ -1,5 +1,5 @@
 import type { Summary } from "~/types/analytic";
-import { ArrowUpRight, ArrowDownLeft, ArrowUpDown } from "lucide-react";
+import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 
 import { Card, Skeleton } from "@heroui/react";
 
@@ -34,26 +34,26 @@ export default function DashboardStats({ summary, isLoading }: DashboardStatsPro
         {
             label: "Total Transactions",
             value: summary.total_transactions,
-            subValue: `${summary.avg_transactions_per_day} per day`,
-            color: "text-blue-500",
-            bg: "bg-blue-50",
+            subValue: `${summary.avg_transactions_per_day} units average per day`,
+            color: "text-primary-500",
+            bg: "bg-primary-50",
             icon: ArrowUpDown,
         },
         {
-            label: "Total Inbound Breakdown",
+            label: "Total Inbound",
             value: summary.total_inbound,
-            subValue: `${summary.avg_inbound_per_day} per day`,
-            color: "text-green-500",
-            bg: "bg-green-50",
-            icon: ArrowDownLeft,
+            subValue: `${summary.avg_inbound_per_day} units average per day`,
+            color: "text-success-500",
+            bg: "bg-success-50",
+            icon: ArrowDown,
         },
         {
-            label: "Total Outbound Breakdown",
+            label: "Total Outbound",
             value: summary.total_outbound,
-            subValue: `${summary.avg_outbound_per_day} per day`,
-            color: "text-red-500",
-            bg: "bg-red-50",
-            icon: ArrowUpRight,
+            subValue: `${summary.avg_outbound_per_day} units average per day`,
+            color: "text-danger-500",
+            bg: "bg-danger-50",
+            icon: ArrowUp,
         },
     ];
 
@@ -70,8 +70,8 @@ export default function DashboardStats({ summary, isLoading }: DashboardStatsPro
                         </span>
                     </div>
                     <div className="flex flex-col">
-                        <h3 className="text-gray-500 text-sm font-medium uppercase tracking-wider mb-1">{stat.label}</h3>
-                        <span className="text-3xl font-bold text-gray-900">{stat.value}</span>
+                        <h3 className="text-default-500 text-sm font-medium uppercase tracking-wider mb-1">{stat.label}</h3>
+                        <span className="text-3xl font-bold text-default-900">{stat.value}</span>
                     </div>
                 </Card>
             ))}
