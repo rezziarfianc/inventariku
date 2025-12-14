@@ -76,7 +76,7 @@ export default function Dashboard() {
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <div className="lg:col-span-2 flex flex-col gap-4">
                             <h2 className="text-xl font-bold px-2">Transactions Trend</h2>
-                            <Card className="p-4 min-h-[400px]">
+                            <Card className="p-4 min-h-100">
                                 {isLoading ? (
                                     <div className="flex justify-center items-center h-full">
                                         <Spinner />

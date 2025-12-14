@@ -1,6 +1,6 @@
 import React from "react";
 import { Form, Input, Button, Card, CardBody, CardHeader, Alert } from "@heroui/react";
-import type { Route } from "./+types/login";
+import type { Route } from "./+types/Login";
 import type { FormEvent } from "react";
 import { Box } from 'lucide-react';
 import { loginUser } from "~/api/authApi";
