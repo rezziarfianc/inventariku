@@ -25,6 +25,7 @@ class GetCategoryRequest extends FormRequest
         return [
             'per_page' => 'sometimes|integer|min:1|max:100',
             'page' => 'sometimes|integer|min:1',
+            'search' => 'sometimes|nullable|string|max:50',
             'sort_by' => 'sometimes|string|in:name,created_at,updated_at',
             'sort_order' => 'sometimes|string|in:asc,desc',
         ];

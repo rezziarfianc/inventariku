@@ -1,9 +1,11 @@
 <?php
 
+use App\Http\Controllers\Api\V1\AnalyticsController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\BrandController;
 use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\ProductController;
+use App\Http\Controllers\Api\V1\ReportController;
 use App\Http\Controllers\Api\V1\RoleController;
 use App\Http\Controllers\Api\V1\SupplyController;
 use App\Http\Controllers\Api\V1\UserController;
@@ -40,6 +42,13 @@ Route::prefix('v1')->group(function () {
 
         // Role Routes
         Route::get('roles', [RoleController::class, 'index'])->name('roles.index');
+
+        // Analytics Routes
+        Route::get('analytics/dashboard', [AnalyticsController::class, 'dashboard']);
+
+        // Report Routes
+        Route::get('reports/stock-movement', [ReportController::class, 'stockMovement']);
+        Route::get('reports/stock-summary', [ReportController::class, 'stockSummary']);
 
     });
 });

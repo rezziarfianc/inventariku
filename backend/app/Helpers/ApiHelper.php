@@ -17,7 +17,7 @@ class ApiHelper
                 'last_page' => $data->lastPage(),
                 'from' => $data->firstItem(),
                 'to' => $data->lastItem(),
-                'links' => $data->linkCollection()->toArray(), // Add pagination links
+                'links' => $data->linkCollection()->toArray()
             ];
         }
 

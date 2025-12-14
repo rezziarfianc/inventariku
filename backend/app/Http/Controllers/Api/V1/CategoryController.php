@@ -26,6 +26,9 @@ class CategoryController extends Controller
             $categories = Category::query();
 
             $validated = $request->validated();
+            if (isset($validated['search'])) {
+                $categories->where('name', 'like', '%' . $validated['search'] . '%');
+            }
             $perPage = $validated['per_page'] ?? 10;
             if (isset($validated['sort_by']) && isset($validated['sort_order'])) {
                 $categories->orderBy($validated['sort_by'], $validated['sort_order']);
@@ -122,7 +125,7 @@ class CategoryController extends Controller
             }
 
             $category->delete();
-            return ApiHelper::success(message: 'Category deleted successfully');
+            return ApiHelper::success(null, 'Category deleted successfully');
 
         } catch (\Exception $e) {
             return response()->json([

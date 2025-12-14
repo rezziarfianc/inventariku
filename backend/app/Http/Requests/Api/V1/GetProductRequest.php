@@ -27,11 +27,12 @@ class GetProductRequest extends FormRequest
             'page' => 'sometimes|integer|min:1',
             'sort_by' => 'sometimes|string|in:name,created_at,updated_at,price,stock',
             'sort_order' => 'sometimes|string|in:asc,desc',
-            'search' => 'sometimes|string|max:30',
+            'search' => 'sometimes|nullable|string|max:30',
             'category_id' => 'sometimes|integer|exists:categories,category_id',
             'min_price' => 'sometimes|numeric|min:0',
             'max_price' => 'sometimes|numeric|min:0',
             'stock_status' => 'sometimes|string|in:in_stock,out_of_stock,low_stock',
+            'product_name' => 'sometimes|nullable|string|max:30',
         ];
     }
 }

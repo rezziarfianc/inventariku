@@ -33,6 +33,9 @@ class ProductController extends Controller
             if (isset($validated['search'])) {
                 $products->where('name', 'like', '%' . $validated['search'] . '%');
             }
+            if (isset($validated['product_name'])) {
+                $products->where('name', 'like', '%' . $validated['product_name'] . '%');
+            }
             if (isset($validated['category_id'])) {
                 $products->where('category_id', $validated['category_id']);
             }
