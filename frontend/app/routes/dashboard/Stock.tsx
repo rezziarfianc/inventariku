@@ -10,7 +10,7 @@ import type { SupplyFlow } from "~/types/supply";
 import { Chip, Spinner } from "@heroui/react";
 import moment from "moment";
 import { ArrowDown, ArrowUp, Plus } from "lucide-react";
-import CreateStockFlowModal from "~/features/stock/components/CreateStockFlowModal";
+import CreateStockFlowModal from "~/components/feature/stock/CreateStockFlowModal";
 import { useState, useEffect } from "react";
 import { Button } from "@heroui/react";
 import { useAuth } from "~/context/authContext";
