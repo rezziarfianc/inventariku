@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import type { Route } from "./+types/Index";
+import type { Route } from "./+types/Dashboard";
 import { useAnalytic } from "~/hooks/useAnalytic";
 import LineChart from "~/components/feature/dashboard/LineChart";
 import DateFilter from "~/components/feature/dashboard/DateFilter";

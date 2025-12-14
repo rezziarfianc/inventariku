@@ -30,7 +30,7 @@ export default function SidebarContent() {
             key: "/dashboard",
             title: "Dashboard",
             icon: <LayoutDashboard size={20} />,
-            isVisible: true,
+            isVisible: user?.can?.dashboard?.includes('view'),
         },
         {
             key: "/users",
@@ -55,13 +55,7 @@ export default function SidebarContent() {
             title: "Categories",
             icon: <Box size={20} />,
             isVisible: user?.can?.categories?.includes('view'),
-        },
-        {
-            key: "/settings",
-            title: "Settings",
-            icon: <Settings size={20} />,
-            isVisible: true,
-        },
+        }
     ];
 
     const visibleItems = navigationItems.filter(item => item.isVisible);
