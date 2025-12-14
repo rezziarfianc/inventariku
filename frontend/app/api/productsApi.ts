@@ -1,5 +1,6 @@
 import type { PaginatedProducts, Product, ProductFormData, ProductQueryParams } from '~/types/product';
-import ApiService, { type ApiResponse } from './baseApi';
+import ApiService from './baseApi';
+import type { ApiResponse } from '~/types/api';
 
 export const getProducts = async (params: ProductQueryParams) => {
     const queryParams: Record<string, string> = {

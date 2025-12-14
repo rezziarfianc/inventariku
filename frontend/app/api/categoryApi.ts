@@ -1,4 +1,5 @@
-import ApiService, { type ApiResponse } from './baseApi';
+import type { ApiResponse } from '~/types/api';
+import ApiService from './baseApi';
 
 export const getCategories = async (params?: any) => {
     const response: ApiResponse = await ApiService.get('categories', params);

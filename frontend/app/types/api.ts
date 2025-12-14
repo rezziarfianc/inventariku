@@ -1,10 +1,10 @@
 import type { SortDescriptor } from "@heroui/react";
 
-// Define types for common API responses
-export interface ApiResponse<T> {
+export interface ApiResponse<T = any> {
+  success: boolean;
+  message: string;
   data: T;
-  status: number;
-  message?: string;
+  meta: object | undefined | null;
 }
 
 export interface ApiError {

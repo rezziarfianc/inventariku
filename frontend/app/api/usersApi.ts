@@ -1,5 +1,6 @@
 import type { PaginatedUsers, User, UserFormData, UserQueryParams } from '~/types/user';
-import ApiService, { type ApiResponse } from './baseApi';
+import ApiService from './baseApi';
+import type { ApiResponse } from '~/types/api';
 
 
 export const getUser = async (user_id: string|number) => {

@@ -1,5 +1,6 @@
 import type { AuthData } from '~/types/user';
-import ApiService, { type ApiResponse } from './baseApi';
+import ApiService from './baseApi';
+import type { ApiResponse } from '~/types/api';
 
 interface LoginCredentials {
   email: string;

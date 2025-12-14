@@ -1,4 +1,4 @@
-import type { ApiError } from "~/types/api";
+import type { ApiError, ApiResponse } from "~/types/api";
 import { logoutUser } from "./authApi";
 
 const baseUrl = import.meta.env.VITE_API_BASE_URL;
@@ -19,13 +19,6 @@ export class ApiRequestError extends Error {
     this.data = data;
     this.name = 'ApiRequestError';
   }
-}
-
-export interface ApiResponse<T = any> {
-  success: boolean;
-  message: string;
-  data: T;
-  meta: object | undefined | null;
 }
 
 class ApiService {
