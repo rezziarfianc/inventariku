@@ -16,9 +16,9 @@ export interface TrendData {
 
 export interface TopProduct {
     product_name: string;
-    total_moved: number;
-    total_moved_outbound: number;
-    total_moved_inbound: number;
+    total_moved: string; // API returns string from SUM
+    total_moved_outbound: string;
+    total_moved_inbound: string;
     avg_outbound: string;
     avg_inbound: string;
     transaction_count: number;
@@ -32,7 +32,7 @@ export interface Period {
 
 export interface Analytics {
     summary: Summary;
-    trend_data: TrendData[];
+    trends: TrendData[];
     top_products: TopProduct[];
     period: Period;
 }

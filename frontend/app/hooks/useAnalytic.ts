@@ -1,30 +1,41 @@
-import { useState } from "react";
-import { useDisclosure } from "@heroui/react";
+import { useEffect, useState } from "react";
 import { getAnalytics } from "~/api/analyticApi";
+import type { Analytics, TrendData } from "~/types/analytic";
 
 export function useAnalytic<T>() {
-    const [analytics, setAnalytics] = useState<Record<string, any>>({});
-    const { isOpen, onOpen, onClose } = useDisclosure();
 
+    const [analytics, setAnalytics] = useState<Analytics | null>(null);
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string>('');
-    const [filter, setFilter] = useState({
-        start_date: new Date().toISOString().split('T')[0],
-        end_date: new Date().toISOString().split('T')[0]
-    });
+    const [error, setError] = useState<string | null>('');
+    const [filter, setFilter] = useState<Record<string, string> | null>(null);
+    const [trendData, setTrendData] = useState<TrendData[] | null>(null);
+
 
     const fetchAnalytics = async () => {
-        const response = await getAnalytics();
-        setAnalytics(response.data);
+        try {
+            setIsLoading(true);
+            setError(null);
+            const response = await getAnalytics(filter);
+            setAnalytics(response.data);
+            setTrendData(response.data.trends || null);
+        } catch (err: any) {
+            setError(err.message);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
-    fetchAnalytics();
+    useEffect(() => {
+        if (!filter) return;
+        fetchAnalytics();
+    }, [filter]);
 
     return {
+        isLoading,
+        error,
+        trendData,
         analytics,
-        isOpen,
-        onOpen,
-        onClose,
+        setFilter,
         fetchAnalytics
     }
 }
