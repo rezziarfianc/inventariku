@@ -1,5 +1,7 @@
 import { Card, Button } from "@heroui/react";
 import { useAuth } from "~/context/authContext";
+import { useNavigate } from "react-router";
+import { useEffect } from "react";
 
 export default function Index() {
     const { user } = useAuth();
@@ -16,7 +18,7 @@ export default function Index() {
                     You are logged in to Inventariku System.
                 </p>
 
-                
+
             </Card>
         </div>
     );

@@ -8,7 +8,7 @@ import TablePagination from "~/components/common/table/TablePagination";
 import { TableProvider } from "~/context/tableContext";
 import type { Product } from "~/types/product";
 import { Edit, Trash2, Eye, Plus, PackagePlus } from "lucide-react";
-import { Button, Chip } from "@heroui/react";
+import { Button, Chip, Spinner } from "@heroui/react";
 import ProductModal from "~/features/products/components/ProductModal";
 import ProductDetailModal from "~/features/products/components/ProductDetailModal";
 import StockManagementModal from "~/features/products/components/StockManagementModal";
@@ -36,8 +36,25 @@ const sortOptions = [
     { label: 'Name Z-A', key: 'name', direction: 'descending' },
 ];
 
+import { useNavigate } from "react-router";
+
 export default function Products() {
-    const { user } = useAuth();
+    const { user, isLoading: authLoading } = useAuth();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!authLoading && user && !user.can?.products?.includes('view')) {
+            navigate("/");
+        }
+    }, [user, navigate, authLoading]);
+
+    if (authLoading || (user && !user.can?.products?.includes('view'))) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <Spinner />
+            </div>
+        );
+    }
     const resource = useResource<Product>({
         api: {
             getAll: productsApi.getProducts,

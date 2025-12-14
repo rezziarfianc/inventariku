@@ -12,7 +12,7 @@ import { Button } from "@heroui/react";
 import UserModal from "~/features/users/components/UserModal";
 import UserDetailModal from "~/features/users/components/UserDetailModal";
 import ConfirmationModal from "~/components/common/feedback/ConfirmationModal";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDisclosure } from "@heroui/react";
 import { useAuth } from "~/context/authContext";
 
@@ -28,8 +28,17 @@ const sortOptions = [
     { label: 'Name Z-A', key: 'name', direction: 'descending' },
 ];
 
+import { useNavigate } from "react-router";
+
 export default function Users() {
     const { user: currentUser } = useAuth();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (currentUser && !currentUser.roles?.includes('admin')) {
+            navigate("/");
+        }
+    }, [currentUser, navigate]);
     const {
         isOpen: isDetailOpen,
         onOpen: onDetailOpen,

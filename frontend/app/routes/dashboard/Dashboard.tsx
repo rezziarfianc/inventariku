@@ -11,6 +11,8 @@ import TransactionTable from "~/components/feature/dashboard/TransactionTable";
 import { Card, Spinner } from "@heroui/react";
 
 import moment from "moment";
+import { useAuth } from "~/context/authContext";
+import { useNavigate } from "react-router";
 
 export function meta({ }: Route.MetaArgs) {
     return [
@@ -19,6 +21,23 @@ export function meta({ }: Route.MetaArgs) {
 }
 
 export default function Dashboard() {
+
+    const { user, isLoading: authLoading } = useAuth();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!authLoading && user && !user.can?.dashboard?.includes('view')) {
+            navigate("/");
+        }
+    }, [user, navigate, authLoading]);
+
+    if (authLoading || (user && !user.can?.dashboard?.includes('view'))) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <Spinner />
+            </div>
+        );
+    }
 
     const { isLoading, error, analytics, setFilter, fetchAnalytics, trendData } = useAnalytic();
     const [currentFilter, setCurrentFilter] = useState<Record<string, any> | null>(null);
@@ -33,6 +52,8 @@ export default function Dashboard() {
         setFilter(newFilter);
         setCurrentFilter(newFilter);
     };
+
+
 
     return (
         <div className="p-4 flex flex-col gap-6 h-full overflow-y-auto">

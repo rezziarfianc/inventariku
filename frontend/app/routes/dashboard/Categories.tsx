@@ -1,4 +1,5 @@
 "use client";
+import { useEffect } from "react";
 
 import { useResource } from "~/hooks/useResource";
 import * as categoryApi from "~/api/categoryApi";
@@ -8,7 +9,7 @@ import TablePagination from "~/components/common/table/TablePagination";
 import { TableProvider } from "~/context/tableContext";
 import type { Category } from "~/types/category";
 import { Edit, Trash2, Eye, Plus } from "lucide-react";
-import { Button } from "@heroui/react";
+import { Button, Spinner } from "@heroui/react";
 import CategoryModal from "~/features/categories/components/CategoryModal";
 import CategoryDetailModal from "~/features/categories/components/CategoryDetailModal";
 import ConfirmationModal from "~/components/common/feedback/ConfirmationModal";
@@ -30,8 +31,25 @@ const sortOptions = [
     { label: 'Name Z-A', key: 'name', direction: 'descending' },
 ];
 
+import { useNavigate } from "react-router";
+
 export default function Categories() {
-    const { user } = useAuth();
+    const { user, isLoading: authLoading } = useAuth();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!authLoading && user && !user.can?.categories?.includes('view')) {
+            navigate("/");
+        }
+    }, [user, navigate, authLoading]);
+
+    if (authLoading || (user && !user.can?.categories?.includes('view'))) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <Spinner />
+            </div>
+        );
+    }
     const resource = useResource<Category>({
         api: {
             getAll: categoryApi.getCategories,

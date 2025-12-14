@@ -5,8 +5,8 @@ export interface UserPermissions {
     products: Action[];
     supplies: Action[];
     brands: Action[];
-    dashboard: Action[];
     users: Action[];
+    dashboard: Action[];
 }
 
 export interface Audit {
