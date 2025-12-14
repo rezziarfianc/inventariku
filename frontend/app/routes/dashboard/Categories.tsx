@@ -50,7 +50,7 @@ export default function Categories() {
             }
             return {
                 data: response.data || [],
-                total: response.total || 0
+                total: response.meta?.total || response.total || 0
             };
         }
     });

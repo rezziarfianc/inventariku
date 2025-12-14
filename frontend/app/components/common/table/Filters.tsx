@@ -1,12 +1,14 @@
+import { useEffect, useState } from "react";
 import { Button, Card, CardBody, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Input } from "@heroui/react";
 import { Search, RefreshCw, ChevronDown } from "lucide-react";
 import { useTableContext } from "~/context/tableContext";
+import { useDebounce } from "~/hooks/useDebounce";
 
 export default function Filters() {
     const {
-        search,
+        search, // Global search from context
         setPage,
-        setSearch,
+        setSearch, // Function to update global search
         setSortDescriptor,
         sortDescriptor,
         sortOptions = [],
@@ -16,6 +18,24 @@ export default function Filters() {
         refresh,
         statusLabel = "Status"
     } = useTableContext();
+
+    // Local state for immediate input feedback
+    const [localSearch, setLocalSearch] = useState(search || "");
+    const debouncedSearch = useDebounce(localSearch, 500);
+
+    // Sync local state if global search changes externally (e.g. clear filters)
+    useEffect(() => {
+        setLocalSearch(search || "");
+    }, [search]);
+
+    // Update global search when debounced value changes
+    useEffect(() => {
+        if (debouncedSearch !== search) {
+            setSearch(debouncedSearch);
+            setPage(1);
+        }
+    }, [debouncedSearch]);
+
 
     const handleStatusFilter = (key: string) => {
         if (setStatusFilter) {
@@ -39,8 +59,8 @@ export default function Filters() {
     }
 
     const handleSearch = (input: string) => {
-        setPage(1);
-        setSearch(input);
+        setLocalSearch(input);
+        // Page reset handles in effect
     }
 
     const currentSortLabel = sortOptions.find(
@@ -51,7 +71,7 @@ export default function Filters() {
         <Card className="mb-4 p-1 self-end w-fit">
             <CardBody className="flex flex-row items-center gap-2">
                 <Input
-                    value={search}
+                    value={localSearch}
                     onValueChange={handleSearch}
                     size="sm"
                     placeholder="Search..."

@@ -9,7 +9,11 @@ import { TableProvider } from "~/context/tableContext";
 import type { SupplyFlow } from "~/types/supply";
 import { Chip } from "@heroui/react";
 import moment from "moment";
-import { ArrowDown, ArrowUp } from "lucide-react";
+import { ArrowDown, ArrowUp, Plus } from "lucide-react";
+import CreateStockFlowModal from "~/features/stock/components/CreateStockFlowModal";
+import { useState } from "react";
+import { Button } from "@heroui/react";
+import { useAuth } from "~/context/authContext";
 
 const columns = [
     { key: "created_at", label: "DATE" },
@@ -31,13 +35,19 @@ const statusOptions = [
 ];
 
 export default function Stock() {
+    const { user } = useAuth();
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+
     const resource = useResource<SupplyFlow>({
         api: {
             getAll: async (params) => {
-                const { status, ...rest } = params || {};
-                const queryParams = { ...rest };
+                const { status, search, ...rest } = params || {};
+                const queryParams: any = { ...rest };
                 if (status) {
                     queryParams.flow_type = status;
+                }
+                if (search) {
+                    queryParams.product_name = search;
                 }
                 return stockApi.getSupplies(queryParams);
             },
@@ -56,7 +66,7 @@ export default function Stock() {
             }
             return {
                 data: response.data || [],
-                total: response.total || 0
+                total: response.meta?.total || response.total || 0
             };
         },
         defaultSort: {
@@ -131,9 +141,29 @@ export default function Stock() {
                 sortOptions={sortOptions}
                 refresh={resource.table.refresh}
             >
-                <div className="flex flex-row w-full justify-end items-center gap-2">
+                <div className="flex flex-row w-full justify-between items-center gap-2">
+                    <div className="flex gap-2">
+                        {user?.can?.supplies?.includes('create') && (
+                            <Button
+                                onPress={() => setIsCreateModalOpen(true)}
+                                className="w-fit" size="sm" color="primary"
+                                startContent={<Plus size={12}></Plus>}
+                            >
+                                <span className="hidden md:block">Create Transaction</span>
+                            </Button>
+                        )}
+                    </div>
                     <Filters />
                 </div>
+
+                <CreateStockFlowModal
+                    isOpen={isCreateModalOpen}
+                    onOpenChange={setIsCreateModalOpen}
+                    onClose={() => setIsCreateModalOpen(false)}
+                    onSave={async () => {
+                        await resource.table.refresh();
+                    }}
+                />
 
                 <Table isLoading={resource.table.isLoading} renderCell={renderCell} />
                 <TablePagination />

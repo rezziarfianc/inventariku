@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import moment from "moment"
-import { getAudit } from "~/api/productsApi";
+import { getAudit, getSupplyFlows } from "~/api/productsApi";
 import {
     Modal,
     ModalContent,
@@ -26,11 +26,15 @@ export default function ProductDetailModal({ isOpen, onOpenChange, onClose, prod
     if (!product) return null;
 
     const [audits, setAudits] = useState<any[]>([]);
+    const [supplyFlows, setSupplyFlows] = useState<any[]>([]);
 
     useEffect(() => {
         if (product && product.product_id) {
             getAudit(product.product_id).then((response) => {
                 setAudits(response || []);
+            });
+            getSupplyFlows({ product_id: product.product_id, per_page: 5 }).then((response) => {
+                setSupplyFlows(response || []);
             });
         }
     }, [product]);
@@ -101,6 +105,33 @@ export default function ProductDetailModal({ isOpen, onOpenChange, onClose, prod
                                     <span className="text-small text-default-500">Description</span>
                                     <p className="text-small text-default-700">{product.description}</p>
                                 </div>
+                            )}
+
+                            {supplyFlows.length > 0 && (
+                                <>
+                                    <Divider className="my-2" />
+                                    <div className="flex flex-col gap-4">
+                                        <div className="flex flex-col gap-1.5">
+                                            <span className="text-small text-default-500 mb-2">Recent Stock Flow</span>
+                                            <div className="flex flex-col gap-2">
+                                                {supplyFlows.map((flow: any, index: any) => (
+                                                    <div key={index} className="flex justify-between items-center text-xs bg-default-50 p-2 rounded-md">
+                                                        <div className="flex flex-col">
+                                                            <div className="flex gap-2 items-center">
+                                                                <Chip size="sm" variant="flat" color={flow.flow_type === 'inbound' ? 'success' : 'warning'} className="h-5 text-[10px]">
+                                                                    {flow.flow_type === 'inbound' ? 'IN' : 'OUT'}
+                                                                </Chip>
+                                                                <span className="font-semibold">{flow.quantity} units</span>
+                                                            </div>
+                                                            <span className="text-default-400 mt-1">{moment(flow.created_at).format('DD MMM YYYY HH:mm')}</span>
+                                                        </div>
+                                                        <span className="text-default-500">{flow.audits && flow.audits[0] && flow.audits[0].user && flow.audits[0].user.name ? `by ${flow.audits[0].user.name}` : ''}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </>
                             )}
 
                             {audits.length > 0 && (

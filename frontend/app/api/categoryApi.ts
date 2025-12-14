@@ -1,8 +1,8 @@
 import ApiService, { type ApiResponse } from './baseApi';
 
-export const getCategories = async () => {
-    const response: ApiResponse = await ApiService.get('categories');
-    return response.data;
+export const getCategories = async (params?: any) => {
+    const response: ApiResponse = await ApiService.get('categories', params);
+    return response;
 };
 
 export const getCategory = async (id: number | string) => {

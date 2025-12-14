@@ -18,9 +18,8 @@ import { useLocation } from "react-router";
 import { useAuth } from "~/context/authContext";
 
 
-const activeStyle = "rounded-lg bg-primary/5 text-primary font-semibold";
-const inactiveStyle = "";
-const commonIconStyle = "text-default-500";
+const activeStyle = "rounded-xl bg-primary/10 text-primary font-semibold";
+const inactiveStyle = "text-default-500 hover:text-primary hover:bg-primary/5 rounded-medium transition-colors";
 
 export default function SidebarContent() {
     const location = useLocation();
@@ -30,37 +29,37 @@ export default function SidebarContent() {
         {
             key: "/",
             title: "Dashboard",
-            icon: <LayoutDashboard size={20} className={commonIconStyle} />,
+            icon: <LayoutDashboard size={20} />,
             isVisible: true,
         },
         {
-            key: "users",
+            key: "/users",
             title: "Users",
-            icon: <Users size={20} className={commonIconStyle} />,
+            icon: <Users size={20} />,
             isVisible: user?.roles?.includes('admin'),
         },
         {
-            key: "stock",
+            key: "/stock",
             title: "Stock Flow",
-            icon: <ArrowUpDown size={20} className={commonIconStyle} />,
+            icon: <ArrowUpDown size={20} />,
             isVisible: user?.can?.supplies?.includes('view'),
         },
         {
-            key: "products",
+            key: "/products",
             title: "Products",
-            icon: <Package size={20} className={commonIconStyle} />,
+            icon: <Package size={20} />,
             isVisible: user?.can?.products?.includes('view'),
         },
         {
-            key: "categories",
+            key: "/categories",
             title: "Categories",
-            icon: <Box size={20} className={commonIconStyle} />,
+            icon: <Box size={20} />,
             isVisible: user?.can?.categories?.includes('view'),
         },
         {
-            key: "settings",
+            key: "/settings",
             title: "Settings",
-            icon: <Settings size={20} className={commonIconStyle} />,
+            icon: <Settings size={20} />,
             isVisible: true,
         },
     ];
@@ -89,10 +88,11 @@ export default function SidebarContent() {
                     >
                         {visibleItems.map((item) => (
                             <ListboxItem
-                                href={'/' + item.key.replace(/^\//, '')}
+                                href={item.key}
                                 key={item.key}
                                 startContent={item.icon}
-                                // className={item.active ? activeStyle : inactiveStyle}
+                                className={location.pathname === item.key ? activeStyle : inactiveStyle}
+                                textValue={item.title}
                                 hideSelectedIcon
                             >
                                 {item.title}

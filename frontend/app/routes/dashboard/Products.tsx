@@ -7,11 +7,13 @@ import Table from "~/components/common/table/Table";
 import TablePagination from "~/components/common/table/TablePagination";
 import { TableProvider } from "~/context/tableContext";
 import type { Product } from "~/types/product";
-import { Edit, Trash2, Eye, Plus } from "lucide-react";
+import { Edit, Trash2, Eye, Plus, PackagePlus } from "lucide-react";
 import { Button, Chip } from "@heroui/react";
 import ProductModal from "~/features/products/components/ProductModal";
 import ProductDetailModal from "~/features/products/components/ProductDetailModal";
+import StockManagementModal from "~/features/products/components/StockManagementModal";
 import ConfirmationModal from "~/components/common/feedback/ConfirmationModal";
+import { ArrowLeftRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getCategories } from "~/api/categoryApi";
 import type { Category } from "~/types/category";
@@ -47,9 +49,24 @@ export default function Products() {
         },
         normalizeData: (response: any) => ({
             data: response.data,
-            total: response.total
+            total: response.meta?.total || response.total || 0
         })
     });
+
+    const [addStockState, setAddStockState] = useState<{ isOpen: boolean; product: Product | null }>({
+        isOpen: false,
+        product: null
+    });
+
+    const handleAddStockClick = (product: Product) => {
+        setAddStockState({ isOpen: true, product });
+    };
+
+    const handleManageStockSave = async (productId: number | string, quantity: number, flowType: 'inbound' | 'outbound') => {
+        await productsApi.manageStock(productId, quantity, flowType);
+        resource.table.refresh();
+        setAddStockState({ isOpen: false, product: null });
+    };
 
     const tableActions = [
         {
@@ -58,6 +75,13 @@ export default function Products() {
             icon: <Eye size={18} />,
             onClick: (item: Product) => resource.view.handleView(item),
             isVisible: true // Always viewable
+        },
+        {
+            key: "manage_stock",
+            label: "Manage Stock",
+            icon: <ArrowLeftRight size={18} />,
+            onClick: (item: Product) => handleAddStockClick(item),
+            isVisible: user?.can?.supplies?.includes('create')
         },
         {
             key: "edit",
@@ -100,8 +124,8 @@ export default function Products() {
     const [categories, setCategories] = useState<Category[]>([]);
 
     useEffect(() => {
-        getCategories().then((data) => {
-            setCategories(data || []);
+        getCategories().then((response) => {
+            setCategories(response.data || []);
         });
     }, []);
 
@@ -157,6 +181,14 @@ export default function Products() {
                     onOpenChange={resource.view.onOpenChange}
                     onClose={resource.view.onClose}
                     product={resource.view.selectedItem}
+                />
+
+                <StockManagementModal
+                    isOpen={addStockState.isOpen}
+                    onOpenChange={(isOpen) => setAddStockState(prev => ({ ...prev, isOpen }))}
+                    onClose={() => setAddStockState({ isOpen: false, product: null })}
+                    product={addStockState.product}
+                    onSave={handleManageStockSave}
                 />
 
                 <ConfirmationModal

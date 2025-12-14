@@ -51,7 +51,7 @@ export default function Users() {
         },
         normalizeData: (response: any) => ({
             data: response.users,
-            total: response.total
+            total: response.meta?.total || response.total || 0
         }),
         defaultSort: {
             column: sortOptions[0].key,
