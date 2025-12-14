@@ -76,22 +76,10 @@ class ReportController extends Controller
                 } elseif ($status === 'out_of_stock') {
                     $query->whereHas('supply', function($q) { $q->where('quantity', '=', 0); });
                 } elseif ($status === 'low_stock') {
-                    // Assuming basic low stock check, typically this logic might compare with low_stock_threshold if available
-                    // For now, using a generic check or leveraging the property on model if exists
                      $query->whereColumn('l_supply.quantity', '<=', 'products.low_stock_threshold'); // Requires intricate join or scope
-                     // Simpler approach compatible with typical easy logic:
-                     // Let's iterate or filter in PHP if complex, or assume standard check
-                     // Ideally backend has a scope for this.
                 }
-                // Refined logic for status:
-                // Actually existing scopes or SupplyController logic uses exact checks.
-                // Let's replicate strict logic if possible or just filter by quantity if simple param.
-                // Reusing SupplyController logic for consistence:
-                // ... (omitted complex join for brevity, relying on user to implement reusable scope if needed, 
-                // but here we will just return products and let frontend filter or basic filters)
             }
             
-            // Re-implementing specific status logic properly
              if ($request->has('status')) {
                  $status = $request->input('status');
                  if ($status === 'low_stock') {
@@ -113,7 +101,6 @@ class ReportController extends Controller
             $perPage = $request->input('per_page', 20);
             $products = $query->paginate($perPage);
 
-            // Enhance collection with calculated fields if needed (e.g. total value)
              $products->getCollection()->transform(function ($product) {
                  $product->total_value = $product->price * ($product->supply->quantity ?? 0);
                  return $product;
