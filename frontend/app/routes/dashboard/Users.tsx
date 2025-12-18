@@ -1,11 +1,11 @@
 "use client";
 
 import { useResource } from "~/hooks/useResource";
-import * as usersApi from "~/api/usersApi";
+import * as usersApi from "~/apis/usersApi";
 import Filters from "~/components/common/table/Filters";
 import Table from "~/components/common/table/Table";
 import TablePagination from "~/components/common/table/TablePagination";
-import { TableProvider } from "~/context/tableContext";
+import { TableProvider } from "~/contexts/tableContext";
 import type { User, UserFormData } from "~/types/user";
 import { Edit, Trash2, Eye, Plus } from "lucide-react";
 import { Button } from "@heroui/react";
@@ -14,7 +14,7 @@ import UserDetailModal from "~/components/feature/users/UserDetailModal";
 import ConfirmationModal from "~/components/common/feedback/ConfirmationModal";
 import { useState, useEffect } from "react";
 import { useDisclosure } from "@heroui/react";
-import { useAuth } from "~/context/authContext";
+import { useAuth } from "~/contexts/authContext";
 
 const columns = [
     { key: "name", label: "USER" },

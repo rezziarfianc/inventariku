@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
 import type { User, AuthData } from "~/types/user";
-import { loginUser, logoutUser } from "~/api/authApi";
+import { loginUser, logoutUser } from "~/apis/authApi";
 import { useNavigate } from "react-router";
 
 interface AuthContextType {

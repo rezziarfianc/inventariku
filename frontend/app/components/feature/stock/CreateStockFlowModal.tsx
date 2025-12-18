@@ -13,7 +13,7 @@ import {
     AutocompleteItem
 } from "@heroui/react";
 import { Form } from "react-router";
-import * as productsApi from "~/api/productsApi";
+import * as productsApi from "~/apis/productsApi";
 import { MoveDown, MoveUp, Search } from "lucide-react";
 import type { Product } from "~/types/product";
 import { useDebounce } from "~/hooks/useDebounce";

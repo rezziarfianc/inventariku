@@ -13,7 +13,7 @@ import {
   Card,
   Tooltip
 } from "@heroui/react";
-import { useTableContext } from "~/context/tableContext";
+import { useTableContext } from "~/contexts/tableContext";
 
 interface ActionItem {
   key: string;

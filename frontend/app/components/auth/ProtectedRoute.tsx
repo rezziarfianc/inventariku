@@ -1,5 +1,5 @@
 import React from "react";
-import { useAuth } from "~/context/authContext";
+import { useAuth } from "~/contexts/authContext";
 import { Spinner } from "@heroui/react";
 import { Navigate, Outlet } from "react-router";
 

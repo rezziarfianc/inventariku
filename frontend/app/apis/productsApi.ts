@@ -54,7 +54,7 @@ export const createProduct = async (data: ProductFormData) => {
 }
 
 export const updateProduct = async (id: number | string, data: ProductFormData) => {
-    const response: ApiResponse = await ApiService.put(`products/${id}`, data);
+    const response: ApiResponse = await ApiService.patch(`products/${id}`, data);
     return response.data;
 }
 

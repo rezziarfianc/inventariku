@@ -2,11 +2,11 @@
 import { useEffect } from "react";
 
 import { useResource } from "~/hooks/useResource";
-import * as categoryApi from "~/api/categoryApi";
+import * as categoryApi from "~/apis/categoryApi";
 import Filters from "~/components/common/table/Filters";
 import Table from "~/components/common/table/Table";
 import TablePagination from "~/components/common/table/TablePagination";
-import { TableProvider } from "~/context/tableContext";
+import { TableProvider } from "~/contexts/tableContext";
 import type { Category } from "~/types/category";
 import { Edit, Trash2, Eye, Plus } from "lucide-react";
 import { Button, Spinner } from "@heroui/react";
@@ -14,7 +14,7 @@ import CategoryModal from "~/components/feature/categories/CategoryModal";
 import CategoryDetailModal from "~/components/feature/categories/CategoryDetailModal";
 import ConfirmationModal from "~/components/common/feedback/ConfirmationModal";
 import moment from "moment";
-import { useAuth } from "~/context/authContext";
+import { useAuth } from "~/contexts/authContext";
 
 const columns = [
     { key: "name", label: "CATEGORY NAME" },

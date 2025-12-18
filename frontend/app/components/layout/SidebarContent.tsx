@@ -11,7 +11,7 @@ import {
     Boxes
 } from "lucide-react";
 import { useLocation } from "react-router";
-import { useAuth } from "~/context/authContext";
+import { useAuth } from "~/contexts/authContext";
 
 
 const activeStyle = "rounded-xl bg-primary/10 text-primary font-semibold";

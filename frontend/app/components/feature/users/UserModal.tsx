@@ -13,7 +13,7 @@ import {
 } from "@heroui/react";
 import { Form } from "react-router";
 import type { User, UserFormData } from "~/types/user";
-import { useAuth } from "~/context/authContext";
+import { useAuth } from "~/contexts/authContext";
 
 const availableRoles = [
     'admin',

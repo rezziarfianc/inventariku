@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getAnalytics } from "~/api/analyticApi";
+import { getAnalytics } from "~/apis/analyticApi";
 import type { Analytics, TrendData } from "~/types/analytic";
 
 export function useAnalytic<T>() {

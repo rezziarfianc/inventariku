@@ -11,7 +11,7 @@ import {
     NavbarItem,
 } from "@heroui/react";
 import { Menu } from "lucide-react";
-import { useAuth } from "~/context/authContext";
+import { useAuth } from "~/contexts/authContext";
 
 interface NavbarProps {
     onOpen: () => void;

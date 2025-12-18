@@ -7,8 +7,6 @@ if (!baseUrl) {
   throw new Error('API_BASE_URL environment variable is not set');
 }
 
-// 1. Make the interface Generic so 'data' can be typed dynamically
-// Custom Error class to carry API status and data
 export class ApiRequestError extends Error {
   public status: number;
   public data: any;
@@ -69,7 +67,6 @@ class ApiService {
 
       const jsonResponse = await response.json();
 
-      // 4. Now 'ApiResponse<T>' refers to the Interface, not the Generic
       const result: ApiResponse<T> = {
         success: jsonResponse.success as boolean,
         message: jsonResponse.message as string,
@@ -111,6 +108,13 @@ class ApiService {
   static async put<T>(url: string, data?: unknown): Promise<ApiResponse<T>> {
     return this.request<T>(url, {
       method: 'PUT',
+      body: data ? JSON.stringify(data) : undefined,
+    });
+  }
+
+  static async patch<T>(url: string, data?: unknown): Promise<ApiResponse<T>> {
+    return this.request<T>(url, {
+      method: 'PATCH',
       body: data ? JSON.stringify(data) : undefined,
     });
   }

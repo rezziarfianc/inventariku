@@ -1,11 +1,11 @@
 "use client";
 
 import { useResource } from "~/hooks/useResource";
-import * as productsApi from "~/api/productsApi";
+import * as productsApi from "~/apis/productsApi";
 import Filters from "~/components/common/table/Filters";
 import Table from "~/components/common/table/Table";
 import TablePagination from "~/components/common/table/TablePagination";
-import { TableProvider } from "~/context/tableContext";
+import { TableProvider } from "~/contexts/tableContext";
 import type { Product } from "~/types/product";
 import { Edit, Trash2, Eye, Plus, PackagePlus, ArrowUpDown } from "lucide-react";
 import { Button, Chip, Spinner } from "@heroui/react";
@@ -15,9 +15,9 @@ import StockManagementModal from "~/components/feature/products/StockManagementM
 import ConfirmationModal from "~/components/common/feedback/ConfirmationModal";
 import { ArrowLeftRight } from "lucide-react";
 import { useEffect, useState } from "react";
-import { getCategories } from "~/api/categoryApi";
+import { getCategories } from "~/apis/categoryApi";
 import type { Category } from "~/types/category";
-import { useAuth } from "~/context/authContext";
+import { useAuth } from "~/contexts/authContext";
 
 const columns = [
     { key: "name", label: "PRODUCT" },

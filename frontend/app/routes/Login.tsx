@@ -3,7 +3,7 @@ import { Form, Input, Button, Card, CardBody, CardHeader, Alert } from "@heroui/
 import type { Route } from "./+types/Login";
 import type { FormEvent } from "react";
 import { Box } from 'lucide-react';
-import { loginUser } from "~/api/authApi";
+import { loginUser } from "~/apis/authApi";
 import type { LoginCredentials } from "~/types/api";
 
 export function meta({ }: Route.MetaArgs) {
@@ -13,7 +13,7 @@ export function meta({ }: Route.MetaArgs) {
     ];
 }
 
-import { useAuth } from "~/context/authContext";
+import { useAuth } from "~/contexts/authContext";
 
 export default function Login() {
     const [alert, setAlert] = React.useState<string | null>(null);

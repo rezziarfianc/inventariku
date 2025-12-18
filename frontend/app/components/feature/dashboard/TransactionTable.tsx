@@ -1,6 +1,6 @@
 import { Chip, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Pagination, Spinner } from "@heroui/react";
 import { useEffect, useMemo, useCallback } from "react";
-import { getSupplies } from "~/api/stockApi";
+import { getSupplies } from "~/apis/stockApi";
 import { useTableData } from "~/hooks/useTableData";
 import type { SupplyFlow } from "~/types/supply";
 import moment from "moment";

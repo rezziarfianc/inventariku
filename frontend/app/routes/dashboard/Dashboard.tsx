@@ -11,7 +11,7 @@ import TransactionTable from "~/components/feature/dashboard/TransactionTable";
 import { Card, Spinner } from "@heroui/react";
 
 import moment from "moment";
-import { useAuth } from "~/context/authContext";
+import { useAuth } from "~/contexts/authContext";
 import { useNavigate } from "react-router";
 
 export function meta({ }: Route.MetaArgs) {

@@ -21,7 +21,7 @@ export const createUser = async (formData: UserFormData) => {
 }
 
 export const updateUser = async (user_id: string | number, formData: UserFormData) => {
-    const response: ApiResponse = await ApiService.put('users/' + user_id, formData);
+    const response: ApiResponse = await ApiService.patch('users/' + user_id, formData);
     return response.data;
 }
 

@@ -62,7 +62,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
-import { AuthProvider } from "~/context/authContext";
+import { AuthProvider } from "~/contexts/authContext";
 
 export default function App() {
   const navigate = useNavigate();

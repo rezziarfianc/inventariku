@@ -17,7 +17,7 @@ export const createCategory = async (data: any) => {
 };
 
 export const updateCategory = async (id: number | string, data: any) => {
-    const response: ApiResponse = await ApiService.put(`categories/${id}`, data);
+    const response: ApiResponse = await ApiService.patch(`categories/${id}`, data);
     return response.data;
 };
 

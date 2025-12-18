@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import moment from "moment"
-import { getAudit, getSupplyFlows } from "~/api/productsApi";
+import { getAudit, getSupplyFlows } from "~/apis/productsApi";
 import {
     Modal,
     ModalContent,

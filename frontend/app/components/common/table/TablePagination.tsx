@@ -1,6 +1,6 @@
 import { Pagination, Dropdown, DropdownItem, DropdownTrigger, Button, DropdownMenu } from "@heroui/react";
 import { ChevronDown } from "lucide-react";
-import { useTableContext } from "~/context/tableContext";
+import { useTableContext } from "~/contexts/tableContext";
 
 interface PaginationProps {
     dropdownItems?: number[],

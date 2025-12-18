@@ -1,5 +1,5 @@
 import { Card, Button } from "@heroui/react";
-import { useAuth } from "~/context/authContext";
+import { useAuth } from "~/contexts/authContext";
 import { useNavigate } from "react-router";
 import { useEffect } from "react";
 

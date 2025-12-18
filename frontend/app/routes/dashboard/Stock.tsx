@@ -1,11 +1,11 @@
 "use client";
 
 import { useResource } from "~/hooks/useResource";
-import * as stockApi from "~/api/stockApi";
+import * as stockApi from "~/apis/stockApi";
 import Filters from "~/components/common/table/Filters";
 import Table from "~/components/common/table/Table";
 import TablePagination from "~/components/common/table/TablePagination";
-import { TableProvider } from "~/context/tableContext";
+import { TableProvider } from "~/contexts/tableContext";
 import type { SupplyFlow } from "~/types/supply";
 import { Chip, Spinner } from "@heroui/react";
 import moment from "moment";
@@ -13,7 +13,7 @@ import { ArrowDown, ArrowUp, Plus } from "lucide-react";
 import CreateStockFlowModal from "~/components/feature/stock/CreateStockFlowModal";
 import { useState, useEffect } from "react";
 import { Button } from "@heroui/react";
-import { useAuth } from "~/context/authContext";
+import { useAuth } from "~/contexts/authContext";
 
 const columns = [
     { key: "created_at", label: "DATE" },
