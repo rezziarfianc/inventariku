@@ -114,6 +114,10 @@ export default function UserModal({ isOpen, onOpenChange, onClose, user, onSave 
             if (user && payload.email === initialEmail) {
                 delete (payload as any).email;
             }
+            if (user && payload.password.length === 0) {
+                delete (payload as any).password;
+                delete (payload as any).password_confirmation;
+            }
             await onSave(payload);
             onClose();
         } catch (error: any) {

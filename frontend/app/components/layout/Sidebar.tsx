@@ -29,7 +29,6 @@ export default function Sidebar({ isOpen, onOpenChange }: SidebarProps) {
                 </DrawerContent>
             </Drawer>
 
-            {/* Changed from 'fixed' to 'sticky' so it sits in the flex flow */}
             <div className="hidden md:flex flex-col w-[280px] h-screen border-r border-default-200 sticky top-0 z-40">
                 <SidebarContent />
             </div>

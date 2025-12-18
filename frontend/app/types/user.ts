@@ -44,6 +44,7 @@ export interface UserQueryParams {
     page: number;
     per_page: number;
     name?: string;
+    search?: string;
     sort_by?: string;
     sort_order?: 'asc' | 'desc';
 }

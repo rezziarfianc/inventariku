@@ -32,7 +32,7 @@ export default function Login() {
         try {
             setAlert(null);
             setLoading(true);
-            await new Promise(r => setTimeout(r, 2000));
+            // await new Promise(r => setTimeout(r, 2000));
             await login(creds);
 
         } catch (error: unknown) {

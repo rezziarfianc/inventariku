@@ -132,7 +132,7 @@ export default function Users() {
             >
                 <div className="flex flex-row w-full justify-between items-center gap-2">
                     <div className="flex gap-2">
-                        {currentUser?.roles?.includes('admin') && (
+                        {currentUser?.can?.users?.includes('create') && (
                             <Button
                                 onPress={resource.modal.handleCreate}
                                 className="w-fit" size="sm" color="primary"
