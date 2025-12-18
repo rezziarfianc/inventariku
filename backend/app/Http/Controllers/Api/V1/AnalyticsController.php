@@ -30,7 +30,7 @@ class AnalyticsController extends Controller
             }
 
             // Calculate number of days in period
-            $numberOfDays = $startDate->diffInDays($endDate) + 1;
+            $numberOfDays = $startDate->diffInDays($endDate);
 
             // Summary Totals
             $totalInbound = SupplyFlow::where('flow_type', 'inbound')
