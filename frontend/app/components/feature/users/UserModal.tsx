@@ -26,7 +26,7 @@ interface UserModalProps {
     onOpenChange: (isOpen: boolean) => void;
     onClose: () => void;
     user?: User | null;
-    onSave: (data: UserFormData) => Promise<void>;
+    onSave: (data: UserFormData, userId?: string | number) => Promise<void>;
 }
 
 export default function UserModal({ isOpen, onOpenChange, onClose, user, onSave }: UserModalProps) {
@@ -99,6 +99,9 @@ export default function UserModal({ isOpen, onOpenChange, onClose, user, onSave 
             }
         }
 
+        console.log(newErrors);
+        console.log(formData);
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -118,7 +121,7 @@ export default function UserModal({ isOpen, onOpenChange, onClose, user, onSave 
                 delete (payload as any).password;
                 delete (payload as any).password_confirmation;
             }
-            await onSave(payload);
+            await onSave(payload, user?.user_id || undefined);
             onClose();
         } catch (error: any) {
             console.error("Failed to save user", error);

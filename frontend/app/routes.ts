@@ -8,6 +8,7 @@ export default [
         route("products", "routes/dashboard/Products.tsx"),
         route("categories", "routes/dashboard/Categories.tsx"),
         route("stock", "routes/dashboard/Stock.tsx"),
+        route("usersv2", "routes/dashboard/Usersv2.tsx"),
     ]),
     route("login", "routes/Login.tsx"),
 ] satisfies RouteConfig;

@@ -47,6 +47,7 @@ export interface UserQueryParams {
     search?: string;
     sort_by?: string;
     sort_order?: 'asc' | 'desc';
+    status?: string;
 }
 
 export interface PaginatedUsers {

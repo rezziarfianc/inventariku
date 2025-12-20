@@ -60,7 +60,7 @@ export default function UserDetailModal({ isOpen, onOpenChange, onClose, user }:
                                         {user.roles && user.roles.length > 0 ? (
                                             user.roles.map((role, index) => (
                                                 <Chip key={index} color="primary" variant="flat" size="sm" className="capitalize">
-                                                    {role.replaceAll("_", " ")}
+                                                    {role.replaceAll("_", " ").charAt(0).toUpperCase() + role.replaceAll("_", " ").slice(1)}
                                                 </Chip>
                                             ))
                                         ) : (

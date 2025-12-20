@@ -31,6 +31,7 @@ export const deleteUser = async (user_id: string | number) => {
 }
 
 export const getUsers = async (params: UserQueryParams) => {
+    console.log(params);
     const queryParams: Record<string, string> = {
         page: params.page.toString(),
         per_page: params.per_page.toString(),
@@ -43,6 +44,10 @@ export const getUsers = async (params: UserQueryParams) => {
     if (params.search) {
         queryParams['search'] = params.search;
         queryParams['name'] = params.search;
+    }
+
+    if (params.status) {
+        queryParams['status'] = params.status;
     }
 
     if (params.sort_by) {
