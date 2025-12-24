@@ -22,6 +22,7 @@ export interface Product {
     quantity?: number;
     low_stock_threshold?: number;
     category_id?: string | number;
+    deleted_at?: string | null | undefined;
 }
 
 export interface ProductFormData {
@@ -35,6 +36,7 @@ export interface ProductFormData {
 
 export interface ProductQueryParams {
     page: number;
+    category?: number;
     per_page: number;
     search?: string;
     sort_by?: string;
@@ -43,7 +45,7 @@ export interface ProductQueryParams {
 }
 
 export interface PaginatedProducts {
-    data: Product[];
+    products: Product[];
     total: number;
     per_page: number;
     last_page: number;

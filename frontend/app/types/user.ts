@@ -1,3 +1,5 @@
+import type { Audit } from "./common";
+
 export type Action = 'create' | 'view' | 'update' | 'delete';
 
 export interface UserPermissions {
@@ -8,15 +10,6 @@ export interface UserPermissions {
     users: Action[];
     dashboard: Action[];
 }
-
-export interface Audit {
-    event: string;
-    old_value: object;
-    new_value: object;
-    created_at: string;
-    user: User;
-}
-
 export interface User {
     user_id: number | string;
     name: string;

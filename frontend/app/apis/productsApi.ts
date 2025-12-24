@@ -27,13 +27,17 @@ export const getProducts = async (params: ProductQueryParams) => {
         queryParams['stock_status'] = params.status;
     }
 
+    if (params.category) {
+        queryParams['category_id'] = params.category.toString();
+    }
+
     const response: ApiResponse = await ApiService.get('products', queryParams);
 
     // Normalize response if needed, consistent with usersApi
     const meta = response.meta as any;
 
     const result: PaginatedProducts = {
-        data: response.data as Product[],
+        products: response.data as Product[],
         total: meta?.total ?? 0,
         per_page: Number(meta?.per_page) ?? 10,
         last_page: meta?.last_page ?? 1,

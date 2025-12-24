@@ -27,7 +27,13 @@ export default function CategoryDetailModal({ isOpen, onOpenChange, onClose, cat
     const [audits, setAudits] = useState<any[]>([]);
 
     useEffect(() => {
+
         if (category && category.category_id) {
+            if (category.audit) {
+                setAudits(category.audit);
+                return;
+            }
+
             getAudit(category.category_id).then((response) => {
                 setAudits(response || []);
             });

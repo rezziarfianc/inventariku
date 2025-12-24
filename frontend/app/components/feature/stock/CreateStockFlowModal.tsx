@@ -53,7 +53,7 @@ export default function CreateStockFlowModal({ isOpen, onOpenChange, onClose, on
                 }
 
                 const response = await productsApi.getProducts(params);
-                setProducts(response.data);
+                setProducts(response.products);
             } catch (err) {
                 console.error("Failed to fetch products", err);
             } finally {

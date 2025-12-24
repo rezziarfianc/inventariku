@@ -1,20 +1,34 @@
 "use client";
 
-import { useResource } from "~/hooks/useResource";
-import * as usersApi from "~/apis/usersApi";
-import Filters from "~/components/common/table/Filters";
-import Table from "~/components/common/table/Table";
-import TablePagination from "~/components/common/table/TablePagination";
-import { TableProvider } from "~/contexts/tableContext";
+import FilterContainer from "~/components/common/newTable/filters/FilterContainer";
+import FilterSearch from "~/components/common/newTable/filters/FilterSearch";
+import FilterSort from "~/components/common/newTable/filters/FilterSort";
+import Table from "~/components/common/newTable/Table";
+import { createUser, deleteUser, getUsers, updateUser, getAudit } from "~/apis/usersApi";
+import TablePagination from "~/components/common/newTable/TablePagination";
+import FilterDropdown from "~/components/common/newTable/filters/FilterDropdown";
+import { Edit, Eye, Plus, Trash2 } from "lucide-react";
+import UserDetailModal from "~/components/feature/users/UserDetailModalv2";
+import { Button, Spinner, useDisclosure, user } from "@heroui/react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { User, UserFormData } from "~/types/user";
-import { Edit, Trash2, Eye, Plus } from "lucide-react";
-import { Button } from "@heroui/react";
+import { useTableStore } from "~/contexts/useTableStore";
 import UserModal from "~/components/feature/users/UserModal";
-import UserDetailModal from "~/components/feature/users/UserDetailModal";
-import ConfirmationModal from "~/components/common/feedback/ConfirmationModal";
-import { useState, useEffect } from "react";
-import { useDisclosure } from "@heroui/react";
 import { useAuth } from "~/contexts/authContext";
+import ConfirmationModal from "~/components/common/feedback/ConfirmationModal";
+import { useNavigate } from "react-router";
+
+
+const sortOptions = [
+    { label: 'Name A-Z', key: 'name', direction: 'ascending' },
+    { label: 'Name Z-A', key: 'name', direction: 'descending' },
+];
+
+const statusFilter = [
+    { key: "active", label: "Active", value: "active" },
+    { key: "all", label: "All", value: "all" },
+    { key: "inactive", label: "Inactive", value: "deactivated" },
+];
 
 const columns = [
     { key: "name", label: "USER" },
@@ -23,156 +37,132 @@ const columns = [
     { key: "actions", label: "ACTIONS" }
 ];
 
-const sortOptions = [
-    { label: 'Name A-Z', key: 'name', direction: 'ascending' },
-    { label: 'Name Z-A', key: 'name', direction: 'descending' },
-];
-
-import { useNavigate } from "react-router";
+const api = {
+    get: getUsers,
+    create: createUser,
+    update: updateUser,
+    delete: deleteUser,
+    key: "users"
+};
 
 export default function Users() {
+    const { page, limit, filters, sort, fetchData, setSort, setFilter, reset } = useTableStore(state => state);
+    const { isOpen: isOpenDetail, onOpen: onOpenDetail, onClose: onCloseDetail } = useDisclosure();
+    const { isOpen: isOpenEdit, onOpen: onOpenEdit, onClose: onCloseEdit, onOpenChange: onOpenChangeEdit } = useDisclosure();
+    const { isOpen: isOpenDelete, onOpen: onOpenDelete, onClose: onCloseDelete, onOpenChange: onOpenChangeDelete } = useDisclosure();
+    const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const { user: currentUser } = useAuth();
+    const permissions = currentUser?.can?.users;
     const navigate = useNavigate();
 
+    const isFirstRender = useRef(true);
+
     useEffect(() => {
-        if (currentUser && !currentUser.can?.users?.includes('view')) {
+        if (currentUser && !permissions?.includes('view')) {
             navigate("/");
         }
     }, [currentUser, navigate]);
-    const {
-        isOpen: isDetailOpen,
-        onOpen: onDetailOpen,
-        onOpenChange: onDetailOpenChange,
-        onClose: onDetailClose
-    } = useDisclosure();
 
-    const [detailUser, setDetailUser] = useState<User | null>(null);
+    if (currentUser && !permissions?.includes('view')) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <Spinner />
+            </div>
+        );
+    }
 
-    // Use Resource Hook
-    const resource = useResource<User>({
-        api: {
-            getAll: usersApi.getUsers,
-            create: usersApi.createUser,
-            update: usersApi.updateUser,
-            delete: usersApi.deleteUser,
-            get: usersApi.getUser,
-            audits: usersApi.getAudit
-        },
-        normalizeData: (response: any) => ({
-            data: response.users,
-            total: response.meta?.total || response.total || 0
-        }),
-        defaultSort: {
-            column: sortOptions[0].key,
-            direction: sortOptions[0].direction as "ascending" | "descending"
+    const openModalDetail = useCallback(async (user: User) => {
+        const audit = await getAudit(user.user_id);
+        user.audit = audit;
+        setSelectedUser(user);
+        onOpenDetail();
+    }, [isOpenDetail]);
+
+    const openModalEdit = useCallback(async (user?: User) => {
+        console.log(user)
+        if (user) {
+            const audit = await getAudit(user.user_id);
+            user.audit = audit;
         }
-    });
+        setSelectedUser(user || null);
+        onOpenEdit();
+    }, [isOpenDetail]);
 
-    const handleView = async (user: User) => {
-        try {
-            const freshData = await usersApi.getUser(user.user_id);
-            const userData = Array.isArray(freshData) ? freshData[0] : freshData;
+    const closeModalDetail = useCallback(() => {
+        setSelectedUser(null);
+        onCloseDetail();
+    }, [onCloseDetail]);
 
-            if (user.user_id) {
-                userData.audit = await usersApi.getAudit(user.user_id);
-            }
+    const closeModalEdit = useCallback(() => {
+        setSelectedUser(null);
+        onCloseEdit();
+    }, [onCloseEdit]);
 
-            setDetailUser(userData);
-            onDetailOpen();
-        } catch (error) {
-            console.error("Failed to fetch user details:", error);
+    const handleSave = useCallback(async (data: UserFormData, userId?: string | number) => {
+        if (userId) {
+            await updateUser(userId, data);
+        } else {
+            await createUser(data);
         }
-    };
 
-    const tableActions = [
-        {
-            key: "view",
-            label: "View Details",
-            icon: <Eye size={18} />,
-            onClick: (item: User) => handleView(item),
-            isVisible: true
-        },
-        {
-            key: "edit",
-            label: "Edit User",
-            icon: <Edit size={18} />,
-            onClick: (item: User) => resource.modal.handleEdit(item),
-            isVisible: currentUser?.can?.users?.includes('update')
-        },
-        {
-            key: "delete",
-            label: "Delete User",
-            icon: <Trash2 size={18} className="text-danger" />,
-            isHidden: (item: User) => !!(currentUser && String(item.user_id) === String(currentUser.user_id)),
-            onClick: (item: User) => {
-                if (currentUser && String(item.user_id) === String(currentUser.user_id)) {
-                    return;
-                }
-                resource.delete.handleDelete(item.user_id);
-            },
-            isVisible: currentUser?.can?.users?.includes('delete')
+        await fetchData(api);
+        onCloseEdit();
+    }, [onCloseEdit]);
+
+    const handleDelete = useCallback(async (userId: string | number) => {
+        await deleteUser(userId);
+        await fetchData(api);
+        onCloseDelete();
+    }, [onCloseDelete]);
+
+    const isDeleteHidden = (user: User) => user.user_id === currentUser?.user_id || !permissions?.includes('delete')
+
+    const actions = useMemo(() => [
+        { key: "view", label: "View", icon: <Eye size={15} />, onClick: openModalDetail, isVisible: permissions?.includes('view') },
+        { key: "edit", label: "Edit", icon: <Edit size={15} />, onClick: openModalEdit, isVisible: permissions?.includes('update') },
+        { key: "delete", label: "Delete", icon: <Trash2 size={15} className="text-danger-300" />, onClick: onOpenDelete, isHidden: isDeleteHidden, isVisible: permissions?.includes('delete') },
+    ], [openModalDetail, openModalEdit]);
+
+    const defaultSort = sortOptions[0];
+
+    //this will run on first render
+    useEffect(() => {
+        reset();
+        setSort(defaultSort);
+        setFilter('status', 'active');
+    }, []);
+
+    useEffect(() => {
+        if (isFirstRender.current) {
+            isFirstRender.current = false;
+            return;
         }
-    ].filter(action => action.isVisible !== false);
-
+        fetchData(api);
+    }, [page, limit, filters, sort, api]);
 
     return (
         <div className="p-4 flex flex-1 flex-col h-full">
             <h1 className="text-2xl font-bold text-gray-800 mb-4">User Management</h1>
-            <TableProvider
-                data={resource.table.items}
-                totalItems={resource.table.totalItems}
+            <UserDetailModal isOpen={isOpenDetail} user={selectedUser} onClose={closeModalDetail} />
+            <UserModal isOpen={isOpenEdit} onClose={closeModalEdit} onSave={handleSave} user={selectedUser} onOpenChange={onOpenChangeEdit} />
+            <ConfirmationModal isOpen={isOpenDelete} onOpenChange={onOpenChangeDelete} onClose={onCloseDelete} onConfirm={() => handleDelete(selectedUser?.user_id || '')} />
+            <div className="flex items-center justify-between">
+                {permissions?.includes('create') &&
+                    <Button color="primary" className="w-fit" size="sm" endContent={<Plus size={15} />} onPress={() => openModalEdit()}>
+                        Create User
+                    </Button>
+                }
+                <FilterContainer>
+                    <FilterSearch />
+                    <FilterSort items={sortOptions} />
+                    <FilterDropdown filterKey="status" items={statusFilter} />
+                </FilterContainer>
+            </div>
+            <Table
                 columns={columns}
-                page={resource.table.page} setPage={resource.table.setPage}
-                rowsPerPage={resource.table.rowsPerPage} setRowsPerPage={resource.table.setRowsPerPage}
-                search={resource.table.search} setSearch={resource.table.setSearch}
-                sortDescriptor={resource.table.sortDescriptor} setSortDescriptor={resource.table.setSortDescriptor}
-                isServerSide={true}
-                sortOptions={sortOptions}
-                refresh={resource.table.refresh}
-            >
-                <div className="flex flex-row w-full justify-between items-center gap-2">
-                    <div className="flex gap-2">
-                        {currentUser?.can?.users?.includes('create') && (
-                            <Button
-                                onPress={resource.modal.handleCreate}
-                                className="w-fit" size="sm" color="primary"
-                                startContent={<Plus size={12}></Plus>}
-                            >
-                                <span className="hidden md:block">Create User</span>
-                            </Button>
-                        )}
-                    </div>
-                    <Filters />
-                </div>
-
-                <UserModal
-                    isOpen={resource.modal.isOpen}
-                    onOpenChange={resource.modal.onOpenChange}
-                    onClose={resource.modal.onClose}
-                    user={resource.modal.selectedItem}
-                    onSave={resource.modal.handleSave}
-                />
-
-                <UserDetailModal
-                    isOpen={isDetailOpen}
-                    onOpenChange={onDetailOpenChange}
-                    onClose={onDetailClose}
-                    user={detailUser}
-                />
-
-                <ConfirmationModal
-                    isOpen={resource.delete.isOpen}
-                    onOpenChange={resource.delete.onOpenChange}
-                    onClose={resource.delete.onClose}
-                    onConfirm={resource.delete.onConfirmDelete}
-                    title="Delete User"
-                    message={`Are you sure you want to delete this user? This action cannot be undone.`}
-                    confirmText="Delete"
-                />
-
-                <Table actions={tableActions} isLoading={resource.table.isLoading} />
-                <TablePagination />
-            </TableProvider>
+                actions={actions}>
+            </Table>
+            <TablePagination />
         </div>
     );
 }

@@ -14,6 +14,7 @@ import {
   Tooltip
 } from "@heroui/react";
 import { useTableContext } from "~/contexts/tableContext";
+import moment from "moment";
 
 interface ActionItem {
   key: string;
@@ -40,6 +41,12 @@ export default function Table({ isLoading = false, actions = [], renderCell: cus
   }, [items]);
 
   const renderCell = useCallback((item: any, columnKey: any) => {
+    if (columnKey === "created_at") {
+      return item.created_at ? moment(item.created_at).format("DD MMM YYYY") : "-";
+    }
+    if (columnKey === "updated_at") {
+      return item.updated_at ? moment(item.updated_at).format("DD MMM YYYY") : "-";
+    }
     if (columnKey === "actions") {
       return (
         <div className="relative flex items-center gap-2">

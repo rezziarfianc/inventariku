@@ -7,8 +7,11 @@ export default [
         route("users", "routes/dashboard/Users.tsx"),
         route("products", "routes/dashboard/Products.tsx"),
         route("categories", "routes/dashboard/Categories.tsx"),
-        route("stock", "routes/dashboard/Stock.tsx"),
-        route("usersv2", "routes/dashboard/Usersv2.tsx"),
+        route("stock", "routes/dashboard/Stocks.tsx"),
+        // route("usersv2", "routes/dashboard/Usersv2.tsx"),
+        // route("categoriesv2", "routes/dashboard/Categoriesv2.tsx"),
+        // route("productsv2", "routes/dashboard/Productsv2.tsx"),
+        // route("stocksv2", "routes/dashboard/Stocksv2.tsx")
     ]),
     route("login", "routes/Login.tsx"),
 ] satisfies RouteConfig;

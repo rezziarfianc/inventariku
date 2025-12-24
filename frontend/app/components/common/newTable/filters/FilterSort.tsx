@@ -1,7 +1,7 @@
 import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Input } from "@heroui/react";
 import { ChevronDown } from "lucide-react";
 import { memo } from "react";
-import { useTableStore } from "~/contexts/newTableContext";
+import { useTableStore } from "~/contexts/useTableStore";
 import type { Sort } from "~/types/common"
 
 function FilterSort({ items }: { items: Sort[] }) {

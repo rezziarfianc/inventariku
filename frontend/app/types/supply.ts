@@ -25,3 +25,9 @@ export interface Audit {
     created_at: string;
     user?: AuditUser;
 }
+export interface PaginatedSupply {
+    supplies: SupplyFlow[];
+    total: number;
+    perPage: number;
+    lastPage: number;
+}

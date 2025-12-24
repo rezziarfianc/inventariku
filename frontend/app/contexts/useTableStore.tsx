@@ -18,6 +18,7 @@ interface TableState {
     setFilter: (key: string, value: any) => void;
     removeFilter: (key: string) => void;
     fetchData: (api: any) => Promise<void>;
+    reset: () => void;
 }
 
 export const useTableStore = create<TableState>((set, get) => ({
@@ -65,4 +66,5 @@ export const useTableStore = create<TableState>((set, get) => ({
             set({ isLoading: false });
         }
     },
+    reset: () => set({ data: [], totalItems: 0, page: 1, limit: 10, sort: { label: '', key: '', direction: 'ascending' }, filters: {}, isLoading: false }),
 }));

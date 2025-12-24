@@ -17,7 +17,7 @@ interface CategoryModalProps {
     onOpenChange: (isOpen: boolean) => void;
     onClose: () => void;
     category?: Category | null;
-    onSave: (data: CategoryFormData) => Promise<void>;
+    onSave: (data: CategoryFormData, categoryId?: string | number) => Promise<void>;
 }
 
 export default function CategoryModal({ isOpen, onOpenChange, onClose, category, onSave }: CategoryModalProps) {

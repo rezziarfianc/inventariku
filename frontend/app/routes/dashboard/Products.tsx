@@ -1,23 +1,25 @@
 "use client";
 
-import { useResource } from "~/hooks/useResource";
-import * as productsApi from "~/apis/productsApi";
-import Filters from "~/components/common/table/Filters";
-import Table from "~/components/common/table/Table";
-import TablePagination from "~/components/common/table/TablePagination";
-import { TableProvider } from "~/contexts/tableContext";
-import type { Product } from "~/types/product";
-import { Edit, Trash2, Eye, Plus, PackagePlus, ArrowUpDown } from "lucide-react";
-import { Button, Chip, Spinner } from "@heroui/react";
-import ProductModal from "~/components/feature/products/ProductModal";
-import ProductDetailModal from "~/components/feature/products/ProductDetailModal";
-import StockManagementModal from "~/components/feature/products/StockManagementModal";
-import ConfirmationModal from "~/components/common/feedback/ConfirmationModal";
-import { ArrowLeftRight } from "lucide-react";
-import { useEffect, useState } from "react";
-import { getCategories } from "~/apis/categoryApi";
-import type { Category } from "~/types/category";
+import FilterContainer from "~/components/common/newTable/filters/FilterContainer";
+import FilterSearch from "~/components/common/newTable/filters/FilterSearch";
+import FilterSort from "~/components/common/newTable/filters/FilterSort";
+import Table from "~/components/common/newTable/Table";
+import TablePagination from "~/components/common/newTable/TablePagination";
+import FilterDropdown from "~/components/common/newTable/filters/FilterDropdown";
+import { Edit, Eye, Plus, Trash2 } from "lucide-react";
+import { Button, Chip, Spinner, useDisclosure, user } from "@heroui/react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTableStore } from "~/contexts/useTableStore";
 import { useAuth } from "~/contexts/authContext";
+import ConfirmationModal from "~/components/common/feedback/ConfirmationModal";
+import { useNavigate } from "react-router";
+import { createProduct, deleteProduct, getProducts, updateProduct, manageStock } from "~/apis/productsApi";
+import type { Product, ProductFormData } from "~/types/product";
+import type { Category } from "~/types/category";
+import { getCategories } from "~/apis/categoryApi";
+import ProductDetailModal from "~/components/feature/products/ProductDetailModal";
+import ProductModal from "~/components/feature/products/ProductModal";
+import StockManagementModal from "~/components/feature/products/StockManagementModal";
 
 const columns = [
     { key: "name", label: "PRODUCT" },
@@ -34,196 +36,215 @@ const sortOptions = [
     { label: 'Oldest', key: 'created_at', direction: 'ascending' },
     { label: 'Name A-Z', key: 'name', direction: 'ascending' },
     { label: 'Name Z-A', key: 'name', direction: 'descending' },
+    { label: 'Most Quantity', key: 'stock', direction: 'descending' },
+    { label: 'Least Quantity', key: 'stock', direction: 'ascending' },
 ];
 
-import { useNavigate } from "react-router";
+const stockOptions = [
+    { label: 'All', key: 'all', value: null },
+    { label: 'In Stock', key: 'in_stock', value: "in_stock" },
+    { label: 'Low Stock', key: 'low_stock', value: "low_stock" },
+    { label: 'Out of Stock', key: 'out_of_stock', value: "out_of_stock" },
+];
+
+const api = {
+    get: getProducts,
+    create: createProduct,
+    update: updateProduct,
+    delete: deleteProduct,
+    key: "products"
+};
+
+const renderCell = (item: Product, columnKey: any): React.ReactNode => {
+    if (columnKey === "status") {
+        const statusColorMap: Record<string, "success" | "warning" | "danger" | "default"> = {
+            in_stock: "success",
+            low_stock: "warning",
+            out_of_stock: "danger",
+        };
+        return (
+            <Chip className="capitalize" color={statusColorMap[item.status || ""] || "default"} size="sm" variant="flat" radius="full">
+                {(item.status || "").replaceAll("_", " ")}
+            </Chip>
+        );
+    }
+    if (columnKey === "price") {
+        return `Rp. ` + item?.price?.toLocaleString();
+    }
+    if (columnKey === "category") {
+        return item.category?.name || "-";
+    }
+    if (columnKey === "brand") {
+        return item.brand?.name || "-";
+    }
+    const value = item[columnKey as keyof Product];
+
+    if (typeof value === "object") {
+        return "[Object object]";
+    }
+
+    return value ?? "-";
+};
+
+const defaultCategories: any[] = [
+    { label: 'All', key: 'all', value: null },
+];
 
 export default function Products() {
-    const { user, isLoading: authLoading } = useAuth();
+    const { user: currentUser, isLoading: authLoading } = useAuth();
+    const { page, limit, filters, sort, fetchData, setSort, setPage, reset } = useTableStore(state => state);
     const navigate = useNavigate();
+    const permissions = currentUser?.can?.products;
+    const stockPermissions = currentUser?.can?.supplies;
+    const [categories, setCategories] = useState<any[]>(defaultCategories);
+    const [rawCategories, setRawCategories] = useState<Category[]>([]);
+    const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+    const { isOpen: isOpenDetail, onOpen, onOpenChange, onClose } = useDisclosure();
+    const { isOpen: isOpenEdit, onOpen: onOpenEdit, onClose: onCloseEdit, onOpenChange: onOpenChangeEdit } = useDisclosure();
+    const { isOpen: isOpenDelete, onOpen: onOpenDelete, onClose: onCloseDelete, onOpenChange: onOpenChangeDelete } = useDisclosure();
+    const isFirstRender = useRef(true);
 
     useEffect(() => {
-        if (!authLoading && user && !user.can?.products?.includes('view')) {
+        if (!authLoading && currentUser && !permissions?.includes('view')) {
             navigate("/");
         }
-    }, [user, navigate, authLoading]);
+    }, [currentUser, navigate, authLoading]);
 
-    if (authLoading || (user && !user.can?.products?.includes('view'))) {
+    if (authLoading || (currentUser && !permissions?.includes('view'))) {
         return (
             <div className="flex justify-center items-center h-screen">
                 <Spinner />
             </div>
         );
     }
-    const resource = useResource<Product>({
-        api: {
-            getAll: productsApi.getProducts,
-            create: productsApi.createProduct,
-            update: productsApi.updateProduct,
-            delete: productsApi.deleteProduct,
-            audits: productsApi.getAudit,
-            get: productsApi.getProduct
-        },
-        normalizeData: (response: any) => ({
-            data: response.data,
-            total: response.meta?.total || response.total || 0
-        })
-    });
 
+    const onOpenDetailModal = useCallback((product: Product) => {
+        setSelectedProduct(product);
+        onOpen();
+    }, [onOpen]);
+
+    const onOpenEditModal = useCallback((product?: Product) => {
+        if (product) {
+            setSelectedProduct(product);
+        }
+        onOpenEdit();
+    }, [onOpenEdit]);
+
+    const onCloseEditModal = useCallback(() => {
+        setSelectedProduct(null);
+        onCloseEdit();
+    }, [selectedProduct, onCloseEdit]);
+
+    const onEditSave = useCallback(async (data: ProductFormData): Promise<void> => {
+        const selectedId = selectedProduct?.product_id;
+        if (selectedId) {
+            await updateProduct(selectedId, data);
+        } else {
+            await createProduct(data);
+        }
+
+        setSelectedProduct(null);
+        await fetchData(api);
+        onCloseEdit();
+    }, [selectedProduct, onCloseEdit]);
+
+    const onOpenDeleteModal = useCallback((product: Product) => {
+        setSelectedProduct(product);
+        onOpenDelete();
+    }, [onOpenDelete]);
+
+    const onConfirmDelete = useCallback(() => {
+        const selectedId = selectedProduct?.product_id;
+        if (selectedId) {
+            deleteProduct(selectedId).then(res => {
+                fetchData(api);
+            });
+        }
+        setSelectedProduct(null);
+        onCloseDelete();
+    }, [selectedProduct, onCloseDelete]);
+
+    const defaultSort = sortOptions[0];
+
+    // set default sort
+    useEffect(() => {
+
+        reset();
+        // fetch categories
+        // todo : implements search at categories
+        const params = {
+            page: 1,
+            per_page: 100
+        }
+
+        getCategories(params).then(res => {
+            const categories = res.categories.map((category) => ({
+                label: category.name,
+                key: category.name, value: category.category_id
+            }))
+            setRawCategories(res.categories);
+            setCategories(defaultCategories.concat(categories));
+        });
+
+        setSort(defaultSort);
+        setPage(1);
+    }, []);
+
+    // if theres any changes to filters, sort, or page, fetch new data
+    useEffect(() => {
+        if (isFirstRender.current) {
+            isFirstRender.current = false;
+            return;
+        }
+
+        fetchData(api);
+    }, [page, limit, filters, sort, api]);
+
+    const actions = [
+        { key: "view", label: "View", icon: <Eye size={15} />, onClick: onOpenDetailModal, isVisible: permissions?.includes('view') },
+        { key: "manage_stock", label: "Manage Stock", icon: <Plus size={15} />, onClick: (product: Product) => setAddStockState({ isOpen: true, product }), isVisible: stockPermissions?.includes('create') },
+        { key: "edit", label: "Edit", icon: <Edit size={15} />, onClick: onOpenEditModal, isVisible: permissions?.includes('update') },
+        { key: "delete", label: "Delete", icon: <Trash2 size={15} className="text-danger-300" />, onClick: onOpenDeleteModal, isVisible: permissions?.includes('delete') },
+    ]
     const [addStockState, setAddStockState] = useState<{ isOpen: boolean; product: Product | null }>({
         isOpen: false,
         product: null
     });
 
-    const handleAddStockClick = (product: Product) => {
-        setAddStockState({ isOpen: true, product });
-    };
-
     const handleManageStockSave = async (productId: number | string, quantity: number, flowType: 'inbound' | 'outbound') => {
-        await productsApi.manageStock(productId, quantity, flowType);
-        resource.table.refresh();
+        await manageStock(productId, quantity, flowType);
+        fetchData(api);
         setAddStockState({ isOpen: false, product: null });
     };
 
-    const tableActions = [
-        {
-            key: "view",
-            label: "View Details",
-            icon: <Eye size={18} />,
-            onClick: (item: Product) => resource.view.handleView(item),
-            isVisible: true // Always viewable
-        },
-        {
-            key: "manage_stock",
-            label: "Manage Stock",
-            icon: <ArrowUpDown size={18} />,
-            onClick: (item: Product) => handleAddStockClick(item),
-            isVisible: user?.can?.supplies?.includes('create')
-        },
-        {
-            key: "edit",
-            label: "Edit Product",
-            icon: <Edit size={18} />,
-            onClick: (item: Product) => resource.modal.handleEdit(item),
-            isVisible: user?.can?.products?.includes('update')
-        },
-        {
-            key: "delete",
-            label: "Delete Product",
-            icon: <Trash2 size={18} className="text-danger" />,
-            onClick: (item: Product) => resource.delete.handleDelete(item.product_id ?? ""),
-            isVisible: user?.can?.products?.includes('delete')
-        }
-    ].filter(action => action.isVisible !== false);
-
-    const renderCell = (item: Product, columnKey: any) => {
-        if (columnKey === "status") {
-            const statusColorMap: Record<string, "success" | "warning" | "danger" | "default"> = {
-                in_stock: "success",
-                low_stock: "warning",
-                out_of_stock: "danger",
-            };
-            return (
-                <Chip className="capitalize" color={statusColorMap[item.status || ""] || "default"} size="sm" variant="flat" radius="full">
-                    {(item.status || "").replaceAll("_", " ")}
-                </Chip>
-            );
-        }
-        if (columnKey === "price") {
-            return `Rp. ` + item.price.toLocaleString();
-        }
-        if (columnKey === "category") {
-            return item.category?.name || "-";
-        }
-        if (columnKey === "brand") {
-            return item.brand?.name || "-";
-        }
-        return undefined;
-    };
-
-    const [categories, setCategories] = useState<Category[]>([]);
-
-    useEffect(() => {
-        getCategories().then((response) => {
-            setCategories(response.data || []);
-        });
-    }, []);
-
-    const statusOptions = [
-        { label: 'In Stock', value: 'in_stock' },
-        { label: 'Out of Stock', value: 'out_of_stock' },
-        { label: 'Low Stock', value: 'low_stock' },
-    ];
-
     return (
-        <div className="p-4 flex flex-1 flex-col h-full">
-            <h1 className="text-2xl font-bold text-gray-800 mb-4">Product Management</h1>
-            <TableProvider
-                data={resource.table.items}
-                totalItems={resource.table.totalItems}
+        <div className="p-4 flex flex-1 flex-col h-full w-full">
+            <h1 className="text-2xl font-bold text-gray-800 mb-4">Products Management</h1>
+            <ProductDetailModal isOpen={isOpenDetail} onOpenChange={onOpenChange} onClose={onClose} product={selectedProduct} />
+            <ProductModal isOpen={isOpenEdit} onOpenChange={onOpenChangeEdit} onClose={onCloseEditModal} product={selectedProduct} onSave={onEditSave} categories={rawCategories} />
+            <StockManagementModal
+                isOpen={addStockState.isOpen}
+                onOpenChange={(isOpen) => setAddStockState(prev => ({ ...prev, isOpen }))}
+                onClose={() => setAddStockState({ isOpen: false, product: null })}
+                product={addStockState.product}
+                onSave={handleManageStockSave}
+            />
+            <ConfirmationModal isOpen={isOpenDelete} onOpenChange={onOpenChangeDelete} onClose={onCloseDelete} onConfirm={onConfirmDelete} />
+            <div className="flex items-center justify-between">
+                {permissions?.includes('create') && <Button onPress={() => onOpenEditModal()} size="sm" color="primary" endContent={<Plus size={15} />}>New Product</Button>}
+                <FilterContainer>
+                    <FilterSearch />
+                    <FilterSort items={sortOptions} />
+                    <FilterDropdown filterKey="stock" items={stockOptions} />
+                    <FilterDropdown filterKey="category" items={categories} />
+                </FilterContainer>
+            </div>
+            <Table
                 columns={columns}
-                page={resource.table.page} setPage={resource.table.setPage}
-                rowsPerPage={resource.table.rowsPerPage} setRowsPerPage={resource.table.setRowsPerPage}
-                search={resource.table.search} setSearch={resource.table.setSearch}
-                sortDescriptor={resource.table.sortDescriptor} setSortDescriptor={resource.table.setSortDescriptor}
-                statusFilter={resource.table.statusFilter} setStatusFilter={resource.table.setStatusFilter}
-                statusOptions={statusOptions}
-                isServerSide={true}
-                sortOptions={sortOptions}
-                refresh={resource.table.refresh}
-            >
-                <div className="flex flex-row w-full justify-between items-center gap-2">
-                    <div className="flex gap-2">
-                        {user?.can?.products?.includes('create') && (
-                            <Button
-                                onPress={resource.modal.handleCreate}
-                                className="w-fit" size="sm" color="primary"
-                                startContent={<Plus size={12}></Plus>}
-                            >
-                                <span className="hidden md:block">Create Product</span>
-                            </Button>
-                        )}
-                    </div>
-                    <Filters />
-                </div>
-
-                <ProductModal
-                    categories={categories}
-                    isOpen={resource.modal.isOpen}
-                    onOpenChange={resource.modal.onOpenChange}
-                    onClose={resource.modal.onClose}
-                    product={resource.modal.selectedItem}
-                    onSave={resource.modal.handleSave}
-                />
-
-                <ProductDetailModal
-                    isOpen={resource.view.isOpen}
-                    onOpenChange={resource.view.onOpenChange}
-                    onClose={resource.view.onClose}
-                    product={resource.view.selectedItem}
-                />
-
-                <StockManagementModal
-                    isOpen={addStockState.isOpen}
-                    onOpenChange={(isOpen) => setAddStockState(prev => ({ ...prev, isOpen }))}
-                    onClose={() => setAddStockState({ isOpen: false, product: null })}
-                    product={addStockState.product}
-                    onSave={handleManageStockSave}
-                />
-
-                <ConfirmationModal
-                    isOpen={resource.delete.isOpen}
-                    onOpenChange={resource.delete.onOpenChange}
-                    onClose={resource.delete.onClose}
-                    onConfirm={resource.delete.onConfirmDelete}
-                    title="Delete Product"
-                    message={`Are you sure you want to delete this? This action cannot be undone.`}
-                    confirmText="Delete"
-                />
-
-                <Table actions={tableActions} isLoading={resource.table.isLoading} renderCell={renderCell} />
-                <TablePagination />
-            </TableProvider>
+                actions={actions}
+                renderCell={renderCell}>
+            </Table>
+            <TablePagination />
         </div>
     );
 }

@@ -1,7 +1,7 @@
 import { Button, Card, CardBody, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Input } from "@heroui/react";
 import { Search, RefreshCw, ChevronDown } from "lucide-react";
 import { memo, useEffect, useState } from "react";
-import { useTableStore } from "~/contexts/newTableContext";
+import { useTableStore } from "~/contexts/useTableStore";
 import { useDebounce } from "~/hooks/useDebounce";
 
 function FilterSearch() {

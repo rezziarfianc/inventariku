@@ -31,7 +31,6 @@ export const deleteUser = async (user_id: string | number) => {
 }
 
 export const getUsers = async (params: UserQueryParams) => {
-    console.log(params);
     const queryParams: Record<string, string> = {
         page: params.page.toString(),
         per_page: params.per_page.toString(),

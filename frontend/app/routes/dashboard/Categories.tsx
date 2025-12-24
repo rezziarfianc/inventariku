@@ -1,20 +1,20 @@
 "use client";
-import { useEffect } from "react";
-
-import { useResource } from "~/hooks/useResource";
-import * as categoryApi from "~/apis/categoryApi";
-import Filters from "~/components/common/table/Filters";
-import Table from "~/components/common/table/Table";
-import TablePagination from "~/components/common/table/TablePagination";
-import { TableProvider } from "~/contexts/tableContext";
-import type { Category } from "~/types/category";
-import { Edit, Trash2, Eye, Plus } from "lucide-react";
-import { Button, Spinner } from "@heroui/react";
-import CategoryModal from "~/components/feature/categories/CategoryModal";
-import CategoryDetailModal from "~/components/feature/categories/CategoryDetailModal";
+import { Button, Spinner, useDisclosure } from "@heroui/react";
+import { Edit, Eye, Plus, Trash2 } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router";
+import { createCategory, deleteCategory, getAudit, getCategories, updateCategory } from "~/apis/categoryApi";
 import ConfirmationModal from "~/components/common/feedback/ConfirmationModal";
-import moment from "moment";
+import FilterContainer from "~/components/common/newTable/filters/FilterContainer";
+import FilterSearch from "~/components/common/newTable/filters/FilterSearch";
+import FilterSort from "~/components/common/newTable/filters/FilterSort";
+import Table from "~/components/common/newTable/Table";
+import TablePagination from "~/components/common/newTable/TablePagination";
+import CategoryDetailModal from "~/components/feature/categories/CategoryDetailModal";
+import CategoryModal from "~/components/feature/categories/CategoryModal";
 import { useAuth } from "~/contexts/authContext";
+import { useTableStore } from "~/contexts/useTableStore";
+import type { Category, CategoryFormData } from "~/types/category";
 
 const columns = [
     { key: "name", label: "CATEGORY NAME" },
@@ -31,146 +31,149 @@ const sortOptions = [
     { label: 'Name Z-A', key: 'name', direction: 'descending' },
 ];
 
-import { useNavigate } from "react-router";
+const api = {
+    get: getCategories,
+    create: createCategory,
+    update: updateCategory,
+    delete: deleteCategory,
+    key: "categories"
+};
+
 
 export default function Categories() {
-    const { user, isLoading: authLoading } = useAuth();
+    const { page, limit, filters, sort, fetchData, setSort, reset } = useTableStore(state => state);
+    const { isOpen: isOpenDetail, onOpen: onOpenDetail, onClose: onCloseDetail, onOpenChange: onOpenChangeDetail } = useDisclosure();
+    const { isOpen: isOpenEdit, onOpen: onOpenEdit, onClose: onCloseEdit, onOpenChange: onOpenChangeEdit } = useDisclosure();
+    const { isOpen: isOpenDelete, onOpen: onOpenDelete, onClose: onCloseDelete, onOpenChange: onOpenChangeDelete } = useDisclosure();
+    const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+    const { user: currentUser } = useAuth();
+    const isFirstRender = useRef(true);
+
+    const permissions = currentUser?.can?.categories;
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (!authLoading && user && !user.can?.categories?.includes('view')) {
+        if (currentUser && !permissions?.includes('view')) {
             navigate("/");
         }
-    }, [user, navigate, authLoading]);
 
-    if (authLoading || (user && !user.can?.categories?.includes('view'))) {
+    }, [currentUser, navigate]);
+
+    if (currentUser && !permissions?.includes('view')) {
         return (
             <div className="flex justify-center items-center h-screen">
                 <Spinner />
             </div>
         );
     }
-    const resource = useResource<Category>({
-        api: {
-            getAll: categoryApi.getCategories,
-            create: categoryApi.createCategory,
-            update: categoryApi.updateCategory,
-            delete: categoryApi.deleteCategory,
-            audits: categoryApi.getAudit,
-            get: categoryApi.getCategory
-        },
-        normalizeData: (response: any) => {
-            if (Array.isArray(response)) {
-                return {
-                    data: response,
-                    total: response.length
-                };
-            }
-            return {
-                data: response.data || [],
-                total: response.meta?.total || response.total || 0
-            };
-        }
-    });
 
-    const tableActions = [
-        {
-            key: "view",
-            label: "View Details",
-            icon: <Eye size={18} />,
-            onClick: (item: Category) => resource.view.handleView(item),
-            isVisible: true
-        },
-        {
-            key: "edit",
-            label: "Edit Category",
-            icon: <Edit size={18} />,
-            onClick: (item: Category) => resource.modal.handleEdit(item),
-            isVisible: user?.can?.categories?.includes('update')
-        },
-        {
-            key: "delete",
-            label: "Delete Category",
-            icon: <Trash2 size={18} className="text-danger" />,
-            onClick: (item: Category) => resource.delete.handleDelete(item.category_id),
-            isVisible: user?.can?.categories?.includes('delete')
-        }
-    ].filter(action => action.isVisible !== false);
+    const openModalEdit = useCallback(async (category?: Category | null) => {
+        setSelectedCategory(category || null);
+        onOpenEdit();
+    }, [isOpenDetail]);
 
-    const renderCell = (item: Category, columnKey: any) => {
-        if (columnKey === "created_at") {
-            return item.created_at ? moment(item.created_at).format("DD MMM YYYY") : "-";
+    const openModalDetail = useCallback(async (category: Category) => {
+        const audit = await getAudit(category.category_id);
+        category.audit = audit;
+        setSelectedCategory(category);
+        onOpenDetail();
+    }, [isOpenDetail]);
+
+    const openModalDelete = useCallback(async (category: Category) => {
+        console.log(category);
+        setSelectedCategory(category);
+        onOpenDelete();
+    }, [isOpenDelete]);
+
+    const onCloseModal = useCallback(() => {
+        setSelectedCategory(null);
+        onCloseDetail();
+        onCloseEdit();
+        onCloseDelete();
+        fetchData(api);
+    }, [isOpenDetail, isOpenEdit, isOpenDelete]);
+
+    const handleSave = useCallback(async (data: CategoryFormData, categoryId?: string | number) => {
+        if (categoryId) {
+            await updateCategory(categoryId, data);
+        } else {
+            await createCategory(data);
         }
-        if (columnKey === "description") {
-            return (
-                <div className="max-w-xs truncate text-default-500">
-                    {item.description || "-"}
-                </div>
-            );
+        setSelectedCategory(null);
+        fetchData(api);
+        onCloseModal();
+    }, [isOpenDetail, isOpenEdit, isOpenDelete]);
+
+    const handleDelete = useCallback(async (categoryId: string | number) => {
+        await deleteCategory(categoryId);
+        setSelectedCategory(null);
+        fetchData(api);
+        onCloseModal();
+    }, [isOpenDetail, isOpenEdit, isOpenDelete]);
+
+    const actions = useMemo(() => [
+        { key: "view", label: "View", icon: <Eye size={15} />, onClick: openModalDetail, isVisible: permissions?.includes('view') },
+        { key: "edit", label: "Edit", icon: <Edit size={15} />, onClick: openModalEdit, isVisible: permissions?.includes('update') },
+        { key: "delete", label: "Delete", icon: <Trash2 size={15} className="text-danger-300" />, onClick: openModalDelete, isVisible: permissions?.includes('delete') },
+    ], [openModalDetail, openModalEdit]);
+
+    const defaultSort = sortOptions[0];
+
+    useEffect(() => {
+        reset();
+        setSort(defaultSort)
+    }, []);
+
+    useEffect(() => {
+        if (isFirstRender.current) {
+            isFirstRender.current = false;
+            return;
         }
-        return undefined;
-    };
+
+        fetchData(api);
+    }, [page, limit, filters, sort, api]);
 
     return (
         <div className="p-4 flex flex-1 flex-col h-full">
             <h1 className="text-2xl font-bold text-gray-800 mb-4">Category Management</h1>
-            <TableProvider
-                data={resource.table.items}
-                totalItems={resource.table.totalItems}
-                columns={columns}
-                page={resource.table.page} setPage={resource.table.setPage}
-                rowsPerPage={resource.table.rowsPerPage} setRowsPerPage={resource.table.setRowsPerPage}
-                search={resource.table.search} setSearch={resource.table.setSearch}
-                sortDescriptor={resource.table.sortDescriptor} setSortDescriptor={resource.table.setSortDescriptor}
-                statusFilter="" setStatusFilter={() => { }} // No status filter for categories yet
-                statusOptions={[]} // No status options
-                isServerSide={true}
-                sortOptions={sortOptions}
-                refresh={resource.table.refresh}
-            >
-                <div className="flex flex-row w-full justify-between items-center gap-2">
-                    <div className="flex gap-2">
-                        {user?.can?.categories?.includes('create') && (
-                            <Button
-                                onPress={resource.modal.handleCreate}
-                                className="w-fit" size="sm" color="primary"
-                                startContent={<Plus size={12}></Plus>}
-                            >
-                                <span className="hidden md:block">Create Category</span>
-                            </Button>
-                        )}
-                    </div>
-                    <Filters />
-                </div>
-
-                <CategoryModal
-                    isOpen={resource.modal.isOpen}
-                    onOpenChange={resource.modal.onOpenChange}
-                    onClose={resource.modal.onClose}
-                    category={resource.modal.selectedItem}
-                    onSave={resource.modal.handleSave}
-                />
-
+            <div className="flex items-center justify-between">
+                {permissions?.includes('create') &&
+                    <Button color="primary" className="w-fit" size="sm" endContent={<Plus size={15} />} onPress={() => openModalEdit()}>
+                        Create Category
+                    </Button>
+                }
                 <CategoryDetailModal
-                    isOpen={resource.view.isOpen}
-                    onOpenChange={resource.view.onOpenChange}
-                    onClose={resource.view.onClose}
-                    category={resource.view.selectedItem}
+                    isOpen={isOpenDetail}
+                    onOpenChange={onOpenChangeDetail}
+                    onClose={onCloseModal}
+                    category={selectedCategory}
                 />
-
                 <ConfirmationModal
-                    isOpen={resource.delete.isOpen}
-                    onOpenChange={resource.delete.onOpenChange}
-                    onClose={resource.delete.onClose}
-                    onConfirm={resource.delete.onConfirmDelete}
+                    isOpen={isOpenDelete}
+                    onOpenChange={onOpenChangeDelete}
                     title="Delete Category"
-                    message={`Are you sure you want to delete this category? Products associated with it may lose their categorization.`}
                     confirmText="Delete"
+                    cancelText="Cancel"
+                    onConfirm={() => handleDelete(selectedCategory?.category_id ?? "")}
+                    onClose={onCloseModal}
                 />
-
-                <Table actions={tableActions} isLoading={resource.table.isLoading} renderCell={renderCell} />
-                <TablePagination />
-            </TableProvider>
+                <CategoryModal
+                    isOpen={isOpenEdit}
+                    onOpenChange={onOpenChangeEdit}
+                    onClose={onCloseModal}
+                    category={selectedCategory}
+                    onSave={handleSave}
+                />
+                <FilterContainer>
+                    <FilterSearch />
+                    <FilterSort items={sortOptions} />
+                </FilterContainer>
+            </div>
+            <Table
+                columns={columns}
+                actions={actions}>
+            </Table>
+            <TablePagination />
         </div>
     );
 }
