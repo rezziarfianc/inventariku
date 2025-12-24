@@ -36,8 +36,8 @@ class SupplyController extends Controller
             if (isset($validated['product_id'])) {
                 $supplyFlows->where('product_id', $validated['product_id']);
             }
-            if (isset($validated['product_name'])) {
-                $productIds = Product::where('name', 'like', '%' . $validated['product_name'] . '%')->pluck('product_id');
+            if (isset($validated['search'])) {
+                $productIds = Product::where('name', 'like', '%' . $validated['search'] . '%')->pluck('product_id');
                 $supplyFlows->whereIn('product_id', $productIds);
             }
             if (isset($validated['brand_id'])) {

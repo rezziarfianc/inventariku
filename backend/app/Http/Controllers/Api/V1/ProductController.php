@@ -27,8 +27,11 @@ class ProductController extends Controller
             $validated = $request->validated();
 
             $perPage = $validated['per_page'] ?? 10;
-            if (isset($validated['sort_by']) && isset($validated['sort_order'])) {
+            if (isset($validated['sort_by']) && isset($validated['sort_order']) && $validated['sort_by'] !== 'stock') {
                 $products->orderBy($validated['sort_by'], $validated['sort_order']);
+            } else if (isset($validated['sort_by']) && isset($validated['sort_order']) && $validated['sort_by'] === 'stock') {
+                $products->leftJoin('supplies', 'products.product_id', '=', 'supplies.product_id');
+                $products->orderBy('supplies.quantity', $validated['sort_order']);
             }
             if (isset($validated['search'])) {
                 $products->where('name', 'like', '%' . $validated['search'] . '%');

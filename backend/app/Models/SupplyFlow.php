@@ -16,11 +16,11 @@ class SupplyFlow extends Model implements Auditable
 
     public function supply()
     {
-        return $this->belongsTo(Supply::class, 'supply_id');
+        return $this->belongsTo(Supply::class, 'supply_id')->withTrashed();
     }
     public function product()
     {
-        return $this->belongsTo(Product::class, 'product_id');
+        return $this->belongsTo(Product::class, 'product_id')->withTrashed();
     }
 
     public function getAuthIdentifierName()
