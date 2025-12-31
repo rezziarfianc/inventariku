@@ -16,6 +16,7 @@ class AnalyticsController extends Controller
         try {
             $startDateInput = $request->input('start_date');
             $endDateInput = $request->input('end_date');
+            $productId = $request->input('product_id');
 
             // Default to last 30 days if not provided
             if (!$startDateInput) {
@@ -29,19 +30,28 @@ class AnalyticsController extends Controller
                 $endDate = Carbon::parse($endDateInput);
             }
 
+
             // Calculate number of days in period
             $numberOfDays = $startDate->diffInDays($endDate);
 
             // Summary Totals
             $totalInbound = SupplyFlow::where('flow_type', 'inbound')
-                ->whereBetween('created_at', [$startDate, $endDate])
-                ->sum('quantity');
+                ->whereBetween('created_at', [$startDate, $endDate]);
 
             $totalOutbound = SupplyFlow::where('flow_type', 'outbound')
-                ->whereBetween('created_at', [$startDate, $endDate])
-                ->sum('quantity');
+                ->whereBetween('created_at', [$startDate, $endDate]);
 
-            $totalTransactions = SupplyFlow::whereBetween('created_at', [$startDate, $endDate])->count();
+            $totalTransactions = SupplyFlow::whereBetween('created_at', [$startDate, $endDate]);
+
+            if ($productId) {
+                $totalInbound->where('product_id', $productId);
+                $totalOutbound->where('product_id', $productId);
+                $totalTransactions->where('product_id', $productId);
+            }
+
+            $totalInbound = $totalInbound->sum('quantity');
+            $totalOutbound = $totalOutbound->sum('quantity');
+            $totalTransactions = $totalTransactions->count();
 
             $summary = [
                 'total_inbound' => $totalInbound,
@@ -61,9 +71,13 @@ class AnalyticsController extends Controller
             )
                 ->whereBetween('created_at', [$startDate, $endDate])
                 ->groupBy('date')
-                ->orderBy('date', 'asc')
-                ->get()
-                ->keyBy('date');
+                ->orderBy('date', 'asc');
+
+            if ($productId) {
+                $trendsData->where('product_id', $productId);
+            }
+
+            $trendsData = $trendsData->get()->keyBy('date');
 
             // Fill in missing dates
             $trends = [];
@@ -96,9 +110,13 @@ class AnalyticsController extends Controller
                 ->join('products', 'supply_flows.product_id', '=', 'products.product_id')
                 ->whereBetween('supply_flows.created_at', [$startDate, $endDate])
                 ->groupBy('products.product_id', 'products.name')
-                ->orderByDesc('total_moved')
-                ->limit(5)
-                ->get();
+                ->orderByDesc('total_moved');
+
+            if ($productId) {
+                $topProducts->where('products.product_id', $productId);
+            }
+
+            $topProducts = $topProducts->get();
 
             $data = [
                 'summary' => $summary,

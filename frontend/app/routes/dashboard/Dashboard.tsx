@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { Route } from "./+types/Dashboard";
 import { useAnalytic } from "~/hooks/useAnalytic";
 import LineChart from "~/components/feature/dashboard/LineChart";
@@ -13,6 +13,8 @@ import { Card, Spinner } from "@heroui/react";
 import moment from "moment";
 import { useAuth } from "~/contexts/authContext";
 import { useNavigate } from "react-router";
+import type { Product } from "~/types/product";
+import ProductFilter from "~/components/feature/dashboard/ProductFilter";
 
 export function meta({ }: Route.MetaArgs) {
     return [
@@ -39,21 +41,34 @@ export default function Dashboard() {
         );
     }
 
-    const { isLoading, error, analytics, setFilter, fetchAnalytics, trendData } = useAnalytic();
+    const { isLoading, error, analytics, setFilter, fetchAnalytics, trendData, filter } = useAnalytic();
     const [currentFilter, setCurrentFilter] = useState<Record<string, any> | null>(null);
 
     // Sync filters
-    const handleFilterChange = (date: any) => {
+    const handleFilterChange = useCallback((date: any) => {
         const newFilter: Record<string, any> = {
             start_date: date?.startDate ? moment(date.startDate).toISOString() : null,
             end_date: date?.endDate ? moment(date.endDate).toISOString() : null
         };
 
-        setFilter(newFilter);
-        setCurrentFilter(newFilter);
-    };
+        const mergedFilter = { ...filter, ...newFilter };
 
+        setFilter(mergedFilter);
+        setCurrentFilter(mergedFilter);
+    }, [filter, setFilter]);
 
+    const handleProductIdChange = useCallback((id: string | null) => {
+        setFilter(prev => {
+            const next = { ...prev };
+            if (id && id !== 'null') {
+                next.product_id = id;
+            } else {
+                delete next.product_id;
+            }
+            setCurrentFilter(next);
+            return next;
+        });
+    }, [setFilter]);
 
     return (
         <div className="p-4 flex flex-col gap-6 h-full overflow-y-auto">
@@ -62,6 +77,7 @@ export default function Dashboard() {
                     <h1 className="text-2xl font-bold">Overview</h1>
                 </div>
                 <div className="flex flex-row gap-4">
+                    <ProductFilter onSelect={handleProductIdChange} />
                     <DateFilter onPress={handleFilterChange} />
                 </div>
             </div>

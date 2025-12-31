@@ -2,7 +2,7 @@ import { Chip, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, 
 import { useEffect, useMemo, useCallback } from "react";
 import { getSupplies } from "~/apis/stockApi";
 import { useTableData } from "~/hooks/useTableData";
-import type { SupplyFlow } from "~/types/supply";
+import type { PaginatedSupply, SupplyFlow } from "~/types/supply";
 import moment from "moment";
 import { ArrowDown, ArrowUp } from "lucide-react";
 
@@ -23,10 +23,15 @@ export default function TransactionTable({ filter }: TransactionTableProps) {
     //adapt the useTableData fetch function
     const fetchSuppliesAdapter = useCallback(async (params: any) => {
         const query = { ...params, ...filter };
-        const response = await getSupplies(query);
 
-        const data = response.data || [];
-        const total = (response.meta as any)?.total || 0;
+        if(query?.search === '') {
+            delete query.search;
+        }
+
+        const supplies: PaginatedSupply = await getSupplies(query);
+
+        const data = supplies.supplies;
+        const total = supplies.total;
 
         return { data, total };
     }, [filter]);
@@ -74,8 +79,8 @@ export default function TransactionTable({ filter }: TransactionTableProps) {
                 );
             case "flow_type":
                 return (
-                    <Chip className="capitalize" 
-                        color={item.flow_type === "inbound" ? "success" : "danger"} size="sm" variant="flat" 
+                    <Chip className="capitalize"
+                        color={item.flow_type === "inbound" ? "success" : "danger"} size="sm" variant="flat"
                         startContent={item.flow_type === "inbound" ? <ArrowUp size={14} /> : <ArrowDown size={14} />}>
                         {item.flow_type}
                     </Chip>

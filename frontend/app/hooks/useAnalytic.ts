@@ -10,7 +10,6 @@ export function useAnalytic<T>() {
     const [filter, setFilter] = useState<Record<string, string> | null>(null);
     const [trendData, setTrendData] = useState<TrendData[] | null>(null);
 
-
     const fetchAnalytics = async () => {
         try {
             setIsLoading(true);
@@ -31,6 +30,7 @@ export function useAnalytic<T>() {
     }, [filter]);
 
     return {
+        filter,
         isLoading,
         error,
         trendData,
