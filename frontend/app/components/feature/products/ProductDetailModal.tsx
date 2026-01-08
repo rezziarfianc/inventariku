@@ -51,16 +51,16 @@ export default function ProductDetailModal({ isOpen, onOpenChange, onClose, prod
                 {(onClose) => (
                     <>
                         <ModalHeader className="flex flex-col gap-1">
-                            Product Details
+                            Item Details
                             <span className="text-small text-default-400 font-normal">
-                                View product information and history.
+                                View item information and history.
                             </span>
                         </ModalHeader>
                         <Divider />
                         <ModalBody>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="flex flex-col gap-1.5">
-                                    <span className="text-small text-default-500">Product Name</span>
+                                    <span className="text-small text-default-500">Item Name</span>
                                     <span className="text-small font-medium">{product.name}</span>
                                 </div>
                                 <div className="flex flex-col gap-1.5">
@@ -146,7 +146,7 @@ export default function ProductDetailModal({ isOpen, onOpenChange, onClose, prod
                                                             <span className="text-default-400">{moment(audit.created_at).format('DD-MM-YYYY HH:mm')}</span>
                                                         </div>
                                                         <div className="mt-1">
-                                                            <span className="capitalize font-medium">{audit.event}</span> this product
+                                                            <span className="capitalize font-medium">{audit.event}</span> this item
                                                         </div>
                                                         {/* Optional: Show what changed if audit details exist */}
                                                         {/* {audit.old_values && audit.new_values && ( ... )} */}

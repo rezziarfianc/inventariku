@@ -5,7 +5,7 @@ export default [
         index("routes/dashboard/Index.tsx"),
         route("dashboard", "routes/dashboard/Dashboard.tsx"),
         route("users", "routes/dashboard/Users.tsx"),
-        route("products", "routes/dashboard/Products.tsx"),
+        route("items", "routes/dashboard/Products.tsx"),
         route("categories", "routes/dashboard/Categories.tsx"),
         route("stock", "routes/dashboard/Stocks.tsx"),
         // route("usersv2", "routes/dashboard/Usersv2.tsx"),

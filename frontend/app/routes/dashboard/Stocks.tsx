@@ -20,7 +20,7 @@ import type { SupplyFlow } from "~/types/supply";
 
 const columns = [
     { key: "created_at", label: "DATE" },
-    { key: "product", label: "PRODUCT" },
+    { key: "product", label: "ITEM" },
     { key: "flow_type", label: "TYPE" },
     { key: "quantity", label: "QUANTITY" },
     { key: "current_quantity", label: "CURRENT QUANTITY" },

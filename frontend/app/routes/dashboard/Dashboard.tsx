@@ -102,7 +102,7 @@ export default function Dashboard() {
                             </Card>
                         </div>
                         <div className="lg:col-span-1 flex flex-col gap-4">
-                            <h2 className="text-xl font-bold px-2">Top 5 Products</h2>
+                            <h2 className="text-xl font-bold px-2">Top 5 Items</h2>
                             <Card className="p-4 h-full">
                                 {isLoading ? (
                                     <div className="flex justify-center items-center h-full">

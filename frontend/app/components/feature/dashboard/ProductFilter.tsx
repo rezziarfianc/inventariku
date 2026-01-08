@@ -22,7 +22,7 @@ function ProductFilter({ onSelect = () => { } }: ProductFilterProps) {
 
 
     const onSelectionChange = (key: Key | null) => {
-        if(key === productId) return;
+        if (key === productId) return;
         setProductId(key as number);
         if (key) {
             const selectedProduct = products.find(p => p.product_id?.toString() === key.toString());
@@ -60,8 +60,8 @@ function ProductFilter({ onSelect = () => { } }: ProductFilterProps) {
 
     return (<div>
         <Autocomplete
-            label="Product"
-            placeholder="Type to search product..."
+            label="Item"
+            placeholder="Type to search item..."
             className="bg-white"
             items={products}
             inputValue={searchQuery}

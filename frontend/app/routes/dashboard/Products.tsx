@@ -22,7 +22,7 @@ import ProductModal from "~/components/feature/products/ProductModal";
 import StockManagementModal from "~/components/feature/products/StockManagementModal";
 
 const columns = [
-    { key: "name", label: "PRODUCT" },
+    { key: "name", label: "ITEM" },
     { key: "price", label: "PRICE" },
     { key: "category", label: "CATEGORY" },
     { key: "low_stock_threshold", label: "LOW STOCK THRESHOLD" },
@@ -219,7 +219,7 @@ export default function Products() {
 
     return (
         <div className="p-4 flex flex-1 flex-col h-full w-full">
-            <h1 className="text-2xl font-bold text-gray-800 mb-4">Products Management</h1>
+            <h1 className="text-2xl font-bold text-gray-800 mb-4">Items Management</h1>
             <ProductDetailModal isOpen={isOpenDetail} onOpenChange={onOpenChange} onClose={onClose} product={selectedProduct} />
             <ProductModal isOpen={isOpenEdit} onOpenChange={onOpenChangeEdit} onClose={onCloseEditModal} product={selectedProduct} onSave={onEditSave} categories={rawCategories} />
             <StockManagementModal
@@ -231,7 +231,7 @@ export default function Products() {
             />
             <ConfirmationModal isOpen={isOpenDelete} onOpenChange={onOpenChangeDelete} onClose={onCloseDelete} onConfirm={onConfirmDelete} />
             <div className="flex items-center justify-between">
-                {permissions?.includes('create') && <Button onPress={() => onOpenEditModal()} size="sm" color="primary" endContent={<Plus size={15} />}>New Product</Button>}
+                {permissions?.includes('create') && <Button onPress={() => onOpenEditModal()} size="sm" color="primary" endContent={<Plus size={15} />}>New Item</Button>}
                 <FilterContainer>
                     <FilterSearch />
                     <FilterSort items={sortOptions} />

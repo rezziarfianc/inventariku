@@ -104,9 +104,9 @@ export default function ProductModal({ isOpen, onOpenChange, onClose, product, o
                 {(onClose) => (
                     <>
                         <ModalHeader className="flex flex-col gap-1">
-                            {product ? "Edit Product" : "Create New Product"}
+                            {product ? "Edit Item" : "Create New Item"}
                             <span className="text-small text-default-400 font-normal">
-                                {product ? "Update product details below." : "Enter the details below to create a new product."}
+                                {product ? "Update item details below." : "Enter the details below to create a new item."}
                             </span>
                         </ModalHeader>
 
@@ -116,7 +116,7 @@ export default function ProductModal({ isOpen, onOpenChange, onClose, product, o
                                     <div className="flex gap-4">
                                         <Input
                                             autoFocus
-                                            label="Product Name"
+                                            label="Item Name"
                                             placeholder="Chicken"
                                             variant="bordered"
                                             className="flex-1"
@@ -176,7 +176,7 @@ export default function ProductModal({ isOpen, onOpenChange, onClose, product, o
                                     </div>
                                     <Textarea
                                         label="Description"
-                                        placeholder="Enter product description"
+                                        placeholder="Enter item description"
                                         variant="bordered"
                                         value={formData.description || ''}
                                         onValueChange={(val) => handleChange('description', val)}
@@ -190,7 +190,7 @@ export default function ProductModal({ isOpen, onOpenChange, onClose, product, o
                                     Cancel
                                 </Button>
                                 <Button color="primary" type="submit" isLoading={isLoading}>
-                                    {product ? "Update Product" : "Save Product"}
+                                    {product ? "Update Item" : "Save Item"}
                                 </Button>
                             </ModalFooter>
                         </Form>

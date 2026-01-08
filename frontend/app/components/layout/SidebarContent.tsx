@@ -41,8 +41,8 @@ export default function SidebarContent() {
             isVisible: user?.can?.categories?.includes('view'),
         },
         {
-            key: "/products",
-            title: "Products",
+            key: "/items",
+            title: "Items",
             icon: <Package size={20} />,
             isVisible: user?.can?.products?.includes('view'),
         },

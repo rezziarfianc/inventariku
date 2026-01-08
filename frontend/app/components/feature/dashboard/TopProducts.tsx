@@ -21,7 +21,7 @@ export default function TopProducts({ products }: TopProductsProps) {
                 <table className="min-w-full divide-y divide-default-200">
                     <thead>
                         <tr>
-                            <th className="px-3 py-3 text-left text-xs font-medium text-default-500 uppercase tracking-wider">Product</th>
+                            <th className="px-3 py-3 text-left text-xs font-medium text-default-500 uppercase tracking-wider">Item</th>
                             <th className="px-3 py-3 text-left text-xs font-medium text-default-500 uppercase tracking-wider">Total</th>
                             <th className="px-3 py-3 text-left text-xs font-medium text-default-500 uppercase tracking-wider">In</th>
                             <th className="px-3 py-3 text-left text-xs font-medium text-default-500 uppercase tracking-wider">Out</th>

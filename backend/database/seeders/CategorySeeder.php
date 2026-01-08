@@ -13,12 +13,15 @@ class CategorySeeder extends Seeder
     public function run(): void
     {
         $categories = [
-            ['name' => 'Nuggets', 'description' => 'Different Kinds of Nuggets', 'code' => 'nuggets'],
-            ['name' => 'Burgers', 'description' => 'Different Kinds of Burgers', 'code' => 'burgers'],
-            ['name' => 'Smoked Beef', 'description' => 'Different Kinds of Smoked Beef', 'code' => 'smoked_beef'],
-            ['name' => 'Sausage', 'description' => 'Different Kind of sausage', 'code' => 'sausage'],
-            ['name' => 'Chicken Wings', 'description' => 'Different Cuts of Chicken Wings', 'code' => 'chicken_wings'],
-            ['name' => 'Meatballs', 'description' => 'Different Kinds of Meatballs', 'code' => 'meatballs'],
+            // Kategori Bahan Baku (Raw Materials)
+            ['name' => 'Bunga Potong Segar', 'description' => 'Bahan baku bunga asli segar', 'code' => 'fresh_cut'],
+            ['name' => 'Daun & Foliage', 'description' => 'Bahan baku dedaunan pelengkap', 'code' => 'foliage'],
+            ['name' => 'Wrapping & Aksesoris', 'description' => 'Kertas tisu, pita, dan perlengkapan', 'code' => 'accessories'],
+            
+            // Kategori Produk Jadi (Finished Products)
+            ['name' => 'Hand Bouquet', 'description' => 'Rangkaian buket bunga tangan', 'code' => 'hand_bouquet'],
+            ['name' => 'Bunga Papan', 'description' => 'Papan ucapan selamat atau duka cita', 'code' => 'flower_board'],
+            ['name' => 'Bunga Meja', 'description' => 'Rangkaian bunga dalam vas/pot', 'code' => 'table_flower'],
         ];
 
         foreach ($categories as $category) {
