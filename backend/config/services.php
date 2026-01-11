@@ -40,6 +40,8 @@ return [
         'api_key' => env('WHATSAPP_API_KEY'),
         'session_id' => env('WHATSAPP_SESSION_ID'),
         'number_suffix' => env('WHATSAPP_NUMBER_SUFFIX', '@c.us'),
+        'send_to' => env('WA_SEND_TO', 'number'), // options: group, number
+        'notification_number' => env('WA_NOTIFICATION_NUMBER', ''),
+        'notification_group_id' => env('WA_NOTIFICATION_GROUP_ID', ''),
     ],
-
 ];

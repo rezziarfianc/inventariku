@@ -104,7 +104,24 @@ class WhatsappService
             Product: {$product->name}\n
             *{$product->name}* is now low on stock (*{$supply->quantity}* units) after an *{$supplyFlow->flow_type}* of *{$supplyFlow->quantity}* units.\n
             Please take action to restock.";
-            $this->sendMessage(env('WA_NOTIFICATION_NUMBER', 6289601871947), preg_replace('/[ \t]+/', ' ', $message));
+
+
+            if (config('services.whatsapp.send_to')=== 'group') {
+                $number = config('services.whatsapp.notification_group_id', '');
+                $this->numberSuffix = '@g.us';
+            } else {
+                $number = config('services.whatsapp.notification_number', '');
+                $this->numberSuffix = '@c.us';
+            }
+
+            \Log::info("Sending stock alert for product {$product->product_id} via WhatsApp to {$number}{$this->numberSuffix} ", [
+                'message' => $message,
+                'session_id' => $this->sessionId,
+                'number' => $number,
+                'number_suffix' => $this->numberSuffix,
+                'send_to' => config('services.whatsapp.send_to'),
+            ]);
+            $this->sendMessage($number, preg_replace('/[ \t]+/', ' ', $message));
         } catch (\Exception $e) {
             \Log::error("Failed to send stock alert for product {$product->product_id}: {$e->getMessage()}");
         }
