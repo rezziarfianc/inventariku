@@ -12,6 +12,7 @@ import {
 } from "@heroui/react";
 import { Menu } from "lucide-react";
 import { useAuth } from "~/contexts/authContext";
+import Notification from "../common/Notification/Notification";
 
 interface NavbarProps {
     onOpen: () => void;
@@ -37,8 +38,12 @@ export default function Navbar({ onOpen }: NavbarProps) {
                     </Button>
                 </NavbarItem>
             </NavbarContent>
+            {/* <NavbarContent justify="end">
+                
+            </NavbarContent> */}
 
             <NavbarContent justify="end">
+                <Notification />
                 <Dropdown placement="bottom-end">
                     <DropdownTrigger>
                         <User

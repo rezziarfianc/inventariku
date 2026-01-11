@@ -134,8 +134,7 @@ class SupplyController extends Controller
             $supplyFlow->load(['product', 'supply']);
 
             if ($supply->quantity <= $product->low_stock_threshold && $flowType === 'outbound') {
-                $whatsappService = app(\App\Services\WhatsappService::class);
-                $whatsappService->sendNotification($supplyFlow);
+                $this->sendLowStockNotifications($supplyFlow, $product, $supply);
             }
 
             $supplyFlow = new SupplyFlowResource($supplyFlow);
@@ -150,5 +149,28 @@ class SupplyController extends Controller
         }
     }
 
+    /**
+     * Send low stock notifications via WhatsApp and broadcast to all users.
+     */
+    private function sendLowStockNotifications(SupplyFlow $supplyFlow, Product $product, Supply $supply): void
+    {
+        $message = "Low stock alert: {$product->name} has only {$supply->quantity} units remaining (threshold: {$product->low_stock_threshold}).";
 
+        try {
+            // 1. Send WhatsApp notification
+            $whatsappService = app(\App\Services\WhatsappService::class);
+            $whatsappService->sendNotification($supplyFlow);
+
+            // 2. Send database notification + WebSocket broadcast to all users
+            $users = \App\Models\User::all();
+
+            foreach ($users as $user) {
+                \App\Notifications\StockNotification::sendToUser($user, $message);
+            }
+
+            \Log::info("Low stock notifications sent for product: {$product->name}");
+        } catch (\Exception $e) {
+            \Log::error("Failed to send low stock notifications: {$e->getMessage()}");
+        }
+    }
 }

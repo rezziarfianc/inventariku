@@ -1,12 +1,12 @@
 "use client";
 
-import FilterContainer from "~/components/common/newTable/filters/FilterContainer";
-import FilterSearch from "~/components/common/newTable/filters/FilterSearch";
-import FilterSort from "~/components/common/newTable/filters/FilterSort";
-import Table from "~/components/common/newTable/Table";
+import FilterContainer from "~/components/common/table/filters/FilterContainer";
+import FilterSearch from "~/components/common/table/filters/FilterSearch";
+import FilterSort from "~/components/common/table/filters/FilterSort";
+import Table from "~/components/common/table/Table";
 import { createUser, deleteUser, getUsers, updateUser, getAudit } from "~/apis/usersApi";
-import TablePagination from "~/components/common/newTable/TablePagination";
-import FilterDropdown from "~/components/common/newTable/filters/FilterDropdown";
+import TablePagination from "~/components/common/table/TablePagination";
+import FilterDropdown from "~/components/common/table/filters/FilterDropdown";
 import { Edit, Eye, Plus, Trash2 } from "lucide-react";
 import UserDetailModal from "~/components/feature/users/UserDetailModalv2";
 import { Button, Spinner, useDisclosure, user } from "@heroui/react";

@@ -4,17 +4,19 @@
   "type": "module",
   "scripts": {
     "build": "react-router build",
-    "dev": "react-router dev",
+    "dev": "react-router dev --port 3000",
     "start": "react-router-serve ./build/server/index.js",
     "typecheck": "react-router typegen && tsc"
   },
   "dependencies": {
     "@heroui/react": "^2.8.5",
+    "@laravel/echo-react": "^2.2.7",
     "@react-router/node": "7.10.1",
     "@react-router/serve": "7.10.1",
     "dotenv": "^17.2.3",
     "framer-motion": "^12.23.26",
     "isbot": "^5.1.31",
+    "laravel-echo": "^2.2.7",
     "lucide-react": "^0.560.0",
     "moment": "^2.30.1",
     "react": "^19.2.1",

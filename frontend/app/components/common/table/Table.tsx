@@ -1,127 +1,108 @@
 "use client";
 
-import React, { useCallback } from "react";
+import React, { memo, useCallback, useMemo } from "react";
 import {
-  Table as HeroUITable,
-  TableHeader,
-  TableColumn,
-  TableBody,
-  TableRow,
-  TableCell,
-  getKeyValue,
-  Spinner,
-  Card,
-  Tooltip
+    Table as HeroUITable,
+    TableHeader,
+    TableColumn,
+    TableBody,
+    TableRow,
+    TableCell,
+    getKeyValue,
+    Spinner,
+    Card,
+    Tooltip
 } from "@heroui/react";
-import { useTableContext } from "~/contexts/tableContext";
-import moment from "moment";
+import { useTableStore } from "~/contexts/useTableStore";
 
 interface ActionItem {
-  key: string;
-  label: string;
-  icon: React.ReactNode;
-  onClick: (item: any) => void;
-  isHidden?: (item: any) => boolean;
+    key: string;
+    label: string;
+    icon: React.ReactNode;
+    onClick: (item: any) => void;
+    isHidden?: (item: any) => boolean;
 }
 
 interface TableProps {
-  isLoading?: boolean;
-  actions?: ActionItem[];
-  renderCell?: (item: any, columnKey: any) => React.ReactNode;
+    columns: any[];
+    isLoading?: boolean;
+    actions?: ActionItem[];
+    renderCell?: (item: any, columnKey: any) => React.ReactNode;
 }
 
-export default function Table({ isLoading = false, actions = [], renderCell: customRenderCell }: TableProps) {
-  const { columns, items } = useTableContext();
+function Table({ columns, actions = [], renderCell: customRenderCell }: TableProps) {
+    // const { data, tableState: { isLoading } } = useNewTableContext();
+    const data = useTableStore(state => state.data);
+    const isLoading = useTableStore(state => state.isLoading);
 
-  const itemsWithKey = React.useMemo(() => {
-    return items.map((item: any, index: number) => ({
-      ...item,
-      key: item.key || item.id || item.user_id || `row-${index}`
-    }));
-  }, [items]);
+    const itemsWithKey = useMemo(() => {
+        return data.map((item: any, index: number) => ({
+            ...item,
+            key: item.key || item.id || item.user_id || `row-${index}`
+        }));
+    }, [data]);
 
-  const renderCell = useCallback((item: any, columnKey: any) => {
-    if (columnKey === "created_at") {
-      return item.created_at ? moment(item.created_at).format("DD MMM YYYY") : "-";
-    }
-    if (columnKey === "updated_at") {
-      return item.updated_at ? moment(item.updated_at).format("DD MMM YYYY") : "-";
-    }
-    if (columnKey === "actions") {
-      return (
-        <div className="relative flex items-center gap-2">
-          {actions.map((action) => {
-            if (action.isHidden?.(item)) return null;
-
+    const renderCell = useCallback((item: any, columnKey: any) => {
+        if (columnKey === "actions") {
             return (
-              <Tooltip key={action.key} content={action.label}>
-                <span
-                  className="text-lg text-default-400 cursor-pointer active:opacity-50"
-                  onClick={() => action.onClick(item)}
-                >
-                  {action.icon}
-                </span>
-              </Tooltip>
+                <div className="relative flex items-center gap-2">
+                    {actions.map((action) => {
+                        if (action.isHidden?.(item)) return null;
+
+                        return (
+                            <Tooltip key={action.key} content={action.label}>
+                                <span
+                                    className="text-lg text-default-400 cursor-pointer active:opacity-50"
+                                    onClick={() => action.onClick(item)}
+                                >
+                                    {action.icon}
+                                </span>
+                            </Tooltip>
+                        );
+                    })}
+                </div>
             );
-          })}
-        </div>
-      );
-    }
+        }
 
-    if (customRenderCell) {
-      const result = customRenderCell(item, columnKey);
-      if (result !== undefined) return result;
-    }
+        return customRenderCell ? customRenderCell(item, columnKey) : getKeyValue(item, columnKey);
+    }, [actions, customRenderCell]);
 
-    const cellValue = getKeyValue(item, columnKey);
 
-    if (Array.isArray(cellValue)) {
-      return cellValue.join(", ");
-    }
+    return (
+        <Card className="w-full overflow-auto bg-white">
+            <HeroUITable
+                aria-label="Data Table"
+                isHeaderSticky
+                isStriped
+                className="w-full overflow-auto"
+            >
+                <TableHeader columns={columns}>
+                    {(column: any) => (
+                        <TableColumn key={column.key}>
+                            {column.label}
+                        </TableColumn>
+                    )}
+                </TableHeader>
 
-    if (typeof cellValue === "object" && cellValue !== null) {
-      if (React.isValidElement(cellValue)) {
-        return cellValue;
-      }
-      return JSON.stringify(cellValue);
-    }
-
-    return cellValue;
-  }, [actions, customRenderCell]);
-
-  return (
-    <Card className="w-full overflow-auto bg-white">
-      <HeroUITable
-        aria-label="Data Table"
-        isHeaderSticky
-        isStriped
-        className="w-full overflow-auto"
-      >
-        <TableHeader columns={columns}>
-          {(column: any) => (
-            <TableColumn key={column.key}>
-              {column.label}
-            </TableColumn>
-          )}
-        </TableHeader>
-
-        <TableBody
-          items={itemsWithKey}
-          isLoading={isLoading}
-          loadingContent={<Spinner label="Loading..." />}
-          emptyContent={!isLoading ? "No data found." : " "}
-        >
-          {(item: any) => (
-            <TableRow key={item.key}>
-              {(columnKey) => (
-                <TableCell>
-                  {renderCell(item, columnKey)}
-                </TableCell>
-              )}
-            </TableRow>
-          )}
-        </TableBody>
-      </HeroUITable>
-    </Card>
-  );
+                <TableBody
+                    items={itemsWithKey}
+                    isLoading={isLoading}
+                    loadingContent={<Spinner label="Loading..." />}
+                    emptyContent={!isLoading ? "No data found." : " "}
+                >
+                    {(item: any) => (
+                        <TableRow key={item.key}>
+                            {(columnKey) => (
+                                <TableCell>
+                                    {renderCell(item, columnKey)}
+                                </TableCell>
+                            )}
+                        </TableRow>
+                    )}
+                </TableBody>
+            </HeroUITable>
+        </Card>
+    );
 }
+
+export default memo(Table);

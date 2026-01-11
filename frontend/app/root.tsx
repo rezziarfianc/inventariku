@@ -63,6 +63,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 import { AuthProvider } from "~/contexts/authContext";
+import { ToastProvider } from "@heroui/react";
 
 export default function App() {
   const navigate = useNavigate();
@@ -71,6 +72,7 @@ export default function App() {
       <AuthProvider>
         <Outlet />
       </AuthProvider>
+      <ToastProvider placement="top-right" toastOffset={70} />
     </HeroUIProvider>
   );
 }
@@ -79,6 +81,8 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   let message = "Oops!";
   let details = "An unexpected error occurred.";
   let stack: string | undefined;
+
+  console.error(error);
 
   if (isRouteErrorResponse(error)) {
     message = error.status === 404 ? "404" : "Error";

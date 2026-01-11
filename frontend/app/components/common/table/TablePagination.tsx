@@ -1,23 +1,22 @@
 import { Pagination, Dropdown, DropdownItem, DropdownTrigger, Button, DropdownMenu } from "@heroui/react";
 import { ChevronDown } from "lucide-react";
-import { useTableContext } from "~/contexts/tableContext";
+import { memo } from "react";
+import { useTableStore } from "~/contexts/useTableStore";
 
 interface PaginationProps {
     dropdownItems?: number[],
 }
 
-export default function TablePagination({ dropdownItems = [5, 10, 15, 50] }: PaginationProps) {
-    const {
-        page,
-        setPage,
-        totalItems,
-        rowsPerPage,
-        setRowsPerPage
-    } = useTableContext();
+function TablePagination({ dropdownItems = [5, 10, 15, 50] }: PaginationProps) {
+    const page = useTableStore((state) => state.page);
+    const setPage = useTableStore((state) => state.setPage);
+    const limit = useTableStore((state) => state.limit);
+    const setLimit = useTableStore((state) => state.setLimit);
+    const totalItems = useTableStore((state) => state.totalItems);
 
-    const totalPages = Math.ceil(totalItems / rowsPerPage) || 1;
-    const start = (page - 1) * rowsPerPage + 1;
-    const end = Math.min(page * rowsPerPage, totalItems);
+    const totalPages = Math.ceil(totalItems / limit) || 1;
+    const start = (page - 1) * limit + 1;
+    const end = Math.min(page * limit, totalItems);
 
     return (
         <div className="flex flex-col md:flex-row justify-end items-center w-full mt-4 p-2 gap-4">
@@ -35,13 +34,13 @@ export default function TablePagination({ dropdownItems = [5, 10, 15, 50] }: Pag
                             size="sm"
                             className="bg-default-100 text-default-600 min-w-16"
                         >
-                            {rowsPerPage}
+                            {limit}
                         </Button>
                     </DropdownTrigger>
                     <DropdownMenu
                         aria-label="Rows per page"
-                        onAction={(key) => setRowsPerPage(Number(key))}
-                        selectedKeys={[String(rowsPerPage)]}
+                        onAction={(key) => setLimit(Number(key))}
+                        selectedKeys={[String(limit)]}
                         selectionMode="single"
                     >
                         {dropdownItems.map((num) => (
@@ -65,3 +64,6 @@ export default function TablePagination({ dropdownItems = [5, 10, 15, 50] }: Pag
         </div>
     );
 }
+
+
+export default memo(TablePagination);
