@@ -12,7 +12,6 @@ export const getProducts = async (params: ProductQueryParams) => {
         queryParams['search'] = params.search;
     }
 
-    // Cast parameter to any to access custom properties like product_name until type definition is updated
     const customParams = params as any;
     if (customParams.product_name) {
         queryParams['product_name'] = customParams.product_name;
@@ -23,8 +22,8 @@ export const getProducts = async (params: ProductQueryParams) => {
         queryParams['sort_order'] = params.sort_order || 'asc';
     }
 
-    if (params.status) {
-        queryParams['stock_status'] = params.status;
+    if (customParams.stock) {
+        queryParams['stock_status'] = customParams.stock;
     }
 
     if (params.category) {
@@ -33,7 +32,6 @@ export const getProducts = async (params: ProductQueryParams) => {
 
     const response: ApiResponse = await ApiService.get('products', queryParams);
 
-    // Normalize response if needed, consistent with usersApi
     const meta = response.meta as any;
 
     const result: PaginatedProducts = {

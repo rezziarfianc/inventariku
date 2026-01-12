@@ -15,6 +15,7 @@ import CategoryModal from "~/components/feature/categories/CategoryModal";
 import { useAuth } from "~/contexts/authContext";
 import { useTableStore } from "~/contexts/useTableStore";
 import type { Category, CategoryFormData } from "~/types/category";
+import { formatDateTime } from "~/libs/utils";
 
 const columns = [
     { key: "name", label: "CATEGORY NAME" },
@@ -117,6 +118,17 @@ export default function Categories() {
         { key: "delete", label: "Delete", icon: <Trash2 size={15} className="text-danger-300" />, onClick: openModalDelete, isVisible: permissions?.includes('delete') },
     ], [openModalDetail, openModalEdit]);
 
+    const renderCell = useCallback((item: Category, columnKey: string): React.ReactNode => {
+        if (columnKey === "created_at") {
+            return item.created_at ? formatDateTime(item.created_at) : "-";
+        }
+        const value = item[columnKey as keyof Category];
+        if (typeof value === 'string' || typeof value === 'number' || value === null || value === undefined) {
+            return value;
+        }
+        return null;
+    }, []);
+
     const defaultSort = sortOptions[0];
 
     useEffect(() => {
@@ -171,7 +183,8 @@ export default function Categories() {
             </div>
             <Table
                 columns={columns}
-                actions={actions}>
+                actions={actions}
+                renderCell={renderCell}>
             </Table>
             <TablePagination />
         </div>

@@ -33,6 +33,7 @@ export default function ProductModal({ isOpen, onOpenChange, onClose, product, o
         quantity: 0,
         description: '',
         category_id: undefined,
+        low_stock_threshold: 0,
     });
     const [isLoading, setIsLoading] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -47,7 +48,8 @@ export default function ProductModal({ isOpen, onOpenChange, onClose, product, o
                     price: product.price,
                     quantity: product.quantity || 0,
                     description: product.description || '',
-                    category_id: categoryId
+                    category_id: categoryId,
+                    low_stock_threshold: product.low_stock_threshold || 0,
                 });
             } else {
                 setFormData({
@@ -55,7 +57,8 @@ export default function ProductModal({ isOpen, onOpenChange, onClose, product, o
                     price: 0,
                     quantity: 0,
                     description: '',
-                    category_id: undefined
+                    category_id: undefined,
+                    low_stock_threshold: 0,
                 });
             }
             setErrors({});
@@ -154,6 +157,17 @@ export default function ProductModal({ isOpen, onOpenChange, onClose, product, o
                                             onValueChange={(val) => handleChange('quantity', parseInt(val) || 0)}
                                             isInvalid={!!errors.quantity}
                                             errorMessage={errors.quantity}
+                                        />
+                                        <Input
+                                            label="Low Stock Threshold"
+                                            placeholder="0"
+                                            type="number"
+                                            variant="bordered"
+                                            className="flex-1"
+                                            value={(formData.low_stock_threshold || 0).toString()}
+                                            onValueChange={(val) => handleChange('low_stock_threshold', parseInt(val) || 0)}
+                                            isInvalid={!!errors.low_stock_threshold}
+                                            errorMessage={errors.low_stock_threshold}
                                         />
                                     </div>
                                     <div className="flex gap-4">

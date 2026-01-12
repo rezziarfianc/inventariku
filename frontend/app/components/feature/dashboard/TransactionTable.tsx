@@ -3,7 +3,7 @@ import { useEffect, useMemo, useCallback } from "react";
 import { getSupplies } from "~/apis/stockApi";
 import { useTableData } from "~/hooks/useTableData";
 import type { PaginatedSupply, SupplyFlow } from "~/types/supply";
-import moment from "moment";
+import { formatDateTime } from "~/libs/utils";
 import { ArrowDown, ArrowUp } from "lucide-react";
 
 interface TransactionTableProps {
@@ -24,7 +24,7 @@ export default function TransactionTable({ filter }: TransactionTableProps) {
     const fetchSuppliesAdapter = useCallback(async (params: any) => {
         const query = { ...params, ...filter };
 
-        if(query?.search === '') {
+        if (query?.search === '') {
             delete query.search;
         }
 
@@ -67,7 +67,7 @@ export default function TransactionTable({ filter }: TransactionTableProps) {
             case "created_at":
                 return (
                     <div className="flex flex-col">
-                        <span className="text-bold text-small capitalize">{moment.utc(item.created_at).format("DD MMM YYYY, HH:mm")}</span>
+                        <span className="text-bold text-small capitalize">{formatDateTime(item.created_at)}</span>
                     </div>
                 );
             case "product":

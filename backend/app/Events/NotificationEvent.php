@@ -54,7 +54,7 @@ class NotificationEvent implements ShouldBroadcastNow
             'message' => $this->message,
             'type' => $this->type,
             'user_id' => $this->userId,
-            'sent_at' => now()->toDateTimeString(),
+            'sent_at' => now()->utc()->format('Y-m-d\TH:i:s.u\Z'),
         ];
     }
 }

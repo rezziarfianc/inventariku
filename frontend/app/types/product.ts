@@ -32,6 +32,7 @@ export interface ProductFormData {
     category_id?: string | number;
     brand_id?: string | number;
     description?: string;
+    low_stock_threshold?: number;
 }
 
 export interface ProductQueryParams {

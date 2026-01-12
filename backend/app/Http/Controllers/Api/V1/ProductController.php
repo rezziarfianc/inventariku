@@ -62,7 +62,9 @@ class ProductController extends Controller
                         });
                         break;
                     case 'low_stock':
-                        $products->whereColumn('supplies.quantity', '<=', 'products.low_stock_threshold');
+                        $products->where('supplies.quantity', '>', 0)
+                            ->where('products.low_stock_threshold', '>', 0)
+                            ->whereColumn('supplies.quantity', '<=', 'products.low_stock_threshold');
                         break;
                 }
             } else {
