@@ -3,6 +3,12 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use chillerlan\QRCode\QRCode;
+use chillerlan\QRCode\QROptions;
+use chillerlan\QRCode\Output\QROutputInterface;
+use chillerlan\QRCode\Common\EccLevel;
+use chillerlan\QRCode\Common\Version;
+use chillerlan\QRCode\Output\QRConsole;
 
 class LoginWhatsapp extends Command
 {
@@ -14,36 +20,59 @@ class LoginWhatsapp extends Command
         $whatsappService = app(\App\Services\WhatsappService::class);
         $this->info("Please scan the QR code to log in to WhatsApp.");
 
-        $base64 = $whatsappService->getQrCode();
-        $base64 = preg_replace('#^data:image/\w+;base64,#i', '', $base64);
+        $qrData = $whatsappService->getQrCode();
 
-        $imageData = base64_decode($base64);
+        if (!$qrData) {
+            $this->error("Failed to retrieve QR data.");
+            return;
+        }
 
-        $this->displayAsciiQr($imageData);
+        $this->displayQr($qrData);
     }
 
-    private function displayAsciiQr(string $imageData)
+    private function displayQr(string $data)
     {
-        $image = imagecreatefromstring($imageData);
-        $width = imagesx($image);
-        $height = imagesy($image);
+        $options = new QROptions([
+            'version'  => Version::AUTO,
+            'eccLevel' => EccLevel::M,
+            'addQuietzone' => false,
+        ]);
 
-        // Resize step for readability in CLI
-        for ($y = 0; $y < $height; $y += 4) {
-            $line = "";
-            for ($x = 0; $x < $width; $x += 4) {
-                $rgb = imagecolorat($image, $x, $y);
-                $r = ($rgb >> 16) & 0xFF;
-                $g = ($rgb >> 8) & 0xFF;
-                $b = $rgb & 0xFF;
+        $qrcode = new QRCode($options);
 
-                // Lightness
-                $luma = $r * 0.3 + $g * 0.59 + $b * 0.11;
+        // Correct way to load the string and fetch the raw matrix in modern versions
+        $qrcode->addByteSegment($data);
+        $matrix = $qrcode->getQRMatrix();
 
-                // Dark = block, Light = space
-                $line .= ($luma < 128) ? "██" : "  ";
+        $size = $matrix->getSize();
+        $margin = 2; // Keep a small margin so the phone camera can detect the edges
+
+        // ANSI format: Forces a White Background with Black Text, ignoring terminal themes
+        $colorFormat = "\033[48;5;255m\033[38;5;0m%s\033[0m";
+
+        // Iterate through the Y-axis two rows at a time
+        for ($y = -$margin; $y < $size + $margin; $y += 2) {
+            $rowString = '';
+
+            for ($x = -$margin; $x < $size + $margin; $x++) {
+                // Check if the current (top) module and the one directly below it are dark
+                $isDarkTop    = ($y >= 0 && $y < $size && $x >= 0 && $x < $size) ? $matrix->check($x, $y) : false;
+                $isDarkBottom = (($y + 1) >= 0 && ($y + 1) < $size && $x >= 0 && $x < $size) ? $matrix->check($x, $y + 1) : false;
+
+                // Build the terminal UI blocks
+                if ($isDarkTop && $isDarkBottom) {
+                    $rowString .= '█'; // Full text block (Both Black)
+                } elseif ($isDarkTop && !$isDarkBottom) {
+                    $rowString .= '▀'; // Upper half text (Top Black, Bottom White)
+                } elseif (!$isDarkTop && $isDarkBottom) {
+                    $rowString .= '▄'; // Lower half text (Top White, Bottom Black)
+                } else {
+                    $rowString .= ' '; // Empty space (Both White background)
+                }
             }
-            $this->line($line);
+
+            // Print the perfectly compressed line
+            $this->line(sprintf($colorFormat, $rowString));
         }
     }
 }

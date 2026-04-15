@@ -6,7 +6,6 @@ use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Support\ServiceProvider;
 
 class WhatsappServiceProvider extends ServiceProvider implements DeferrableProvider
-
 {
     /**
      * Register services.

@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Models\SupplyFlow;
 use GuzzleHttp\Client;
-use \Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ResponseInterface;
 
 class WhatsappService
 {
@@ -52,7 +52,6 @@ class WhatsappService
                 'response_status' => $response->getStatusCode(),
             ]);
             return $response->getStatusCode() === 200;
-
         } catch (\Exception $e) {
             \Log::error("Failed to send WhatsApp message to {$number}: {$e->getMessage()}", [
                 'session_id' => $this->sessionId,
@@ -106,7 +105,7 @@ class WhatsappService
             Please take action to restock.";
 
 
-            if (config('services.whatsapp.send_to')=== 'group') {
+            if (config('services.whatsapp.send_to') === 'group') {
                 $number = config('services.whatsapp.notification_group_id', '');
                 $this->numberSuffix = '@g.us';
             } else {
@@ -131,7 +130,12 @@ class WhatsappService
     {
         $response = $this->get('session/qr/' . $this->sessionId);
         $data = json_decode($response->getBody()->getContents(), true);
-        return $data['qrCode'] ?? '';
+        return $data['qr'] ?? '';
     }
 
+    public function getQrCodeImage()
+    {
+        $response = $this->get('session/qr/' . $this->sessionId . "/image");
+        return $response->getBody()->getContents();
+    }
 }

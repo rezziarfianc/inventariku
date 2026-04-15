@@ -44,7 +44,7 @@ class StockNotification extends Notification implements ShouldQueue
     {
         // Store in database
         $user->notify(new static($message));
-        
+
         // Broadcast via public channel
         event(new NotificationEvent($message, 'stock', $user->user_id));
     }
@@ -54,7 +54,7 @@ class StockNotification extends Notification implements ShouldQueue
      */
     public function toMail(object $notifiable): MailMessage
     {
-        return (new MailMessage)
+        return (new MailMessage())
             ->subject('Stock Alert: ' . substr($this->message, 0, 20) . '...')
             ->line($this->message)
             ->action('View Inventory', url('/inventory'))
